@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "epson")(type "KiCad")(uri "${KIPRJMOD}/dpiegdon-kicad-modules/library/epson.kicad_sym")(options "")(descr ""))
+  (lib (name "lattice_fpga")(type "KiCad")(uri "${KIPRJMOD}/dpiegdon-kicad-modules/library/lattice_fpga.kicad_sym")(options "")(descr ""))
+)

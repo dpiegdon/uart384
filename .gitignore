@@ -1,0 +1,17 @@
+.*.swp
+gateware/*.asc
+gateware/*.bin
+gateware/*.blif
+gateware/*.json
+gateware/*.rpt
+gateware/*_tb.test
+gateware/*_tb.vcd
+gateware/*.dot
+gateware/*.png
+pcb/*.bak
+pcb/*.sch-bak
+pcb/*.kicad_pcb-bak
+pcb/*-backups
+pcb/#auto_saved_files#
+pcb/~*.lck
+pcb/fp-info-cache

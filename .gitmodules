@@ -1,0 +1,6 @@
+[submodule "gateware/verilog-buildingblocks"]
+	path = gateware/verilog-buildingblocks
+	url = https://github.com/dpiegdon/verilog-buildingblocks.git
+[submodule "pcb/dpiegdon-kicad-modules"]
+	path = pcb/dpiegdon-kicad-modules
+	url = https://github.com/dpiegdon/kicad-modules.git

@@ -1,0 +1,19 @@
+set_io --warn-no-port uart_txd 1
+set_io --warn-no-port uart_rxd 2
+set_io --warn-no-port uart_rts 5
+set_io --warn-no-port uart_cts 6
+set_io --warn-no-port uart_dsr 7
+set_io --warn-no-port uart_dtr 8
+set_io --warn-no-port uart_dcd 18
+set_io --warn-no-port uart_ri  19
+
+set_io --warn-no-port clk32m   20
+
+set_io --warn-no-port gpio1    22
+set_io --warn-no-port gpio2    23
+set_io --warn-no-port gpio3    26
+set_io --warn-no-port gpio4    27
+set_io --warn-no-port gpio5    29
+set_io --warn-no-port gpio6    30
+set_io --warn-no-port gpio7    31
+set_io --warn-no-port gpio8    32

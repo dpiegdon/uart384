@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "dpiegdon")(type "KiCad")(uri "${KIPRJMOD}/dpiegdon-kicad-modules/footprints.pretty/")(options "")(descr ""))
+)
