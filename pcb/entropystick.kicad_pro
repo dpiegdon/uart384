@@ -52,7 +52,16 @@
         }
       },
       "diff_pair_dimensions": [],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "copper_edge_clearance|157835000|112201000|71ed64c1-bac7-4b98-86c3-319c1e1fa93f|f680e83d-122b-4181-8fe1-3043292c7c77",
+          ""
+        ],
+        [
+          "copper_edge_clearance|161935000|112201000|71ed64c1-bac7-4b98-86c3-319c1e1fa93f|80ba4297-dda8-4354-868c-bf8638954725",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
