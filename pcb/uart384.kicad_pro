@@ -511,9 +511,9 @@
       "plot": "production/uart384-v1.0/",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "uart384.step",
       "svg": "",
-      "vrml": ""
+      "vrml": "../3d/uart384.wrl"
     },
     "page_layout_descr_file": ""
   },
