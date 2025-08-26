@@ -2,7 +2,7 @@
 ARCH=ice40
 DEVICE=lp384
 PACKAGE=qn32
-PCF=lp384.pcf
+PCF=uart384.pcf
 
 #QUIET=-q
 
@@ -20,14 +20,17 @@ TESTS=$(TESTBENCHES:%.v=%.test)
 .PRECIOUS: %.json %.asc %.bin %.rpt
 
 PROD_FILES= top.v \
-	verilog-buildingblocks/lfsr.v \
 	verilog-buildingblocks/binary_debias.v \
 	verilog-buildingblocks/clock_prescaler.v \
-	verilog-buildingblocks/lattice_$(ARCH)/ringoscillator.v \
 	verilog-buildingblocks/lattice_$(ARCH)/random.v \
+	verilog-buildingblocks/lattice_$(ARCH)/ringoscillator.v \
+	verilog-buildingblocks/lattice_ice40/debounced_button.v \
+	verilog-buildingblocks/lattice_ice40/pullup_input.v \
+	verilog-buildingblocks/lattice_ice40/tristate_output.v \
+	verilog-buildingblocks/lfsr.v \
 	verilog-buildingblocks/random.v \
 	verilog-buildingblocks/synchronous_reset_timer.v \
-	verilog-buildingblocks/uart.v \
+	verilog-buildingblocks/uart.v
 
 all: top.rpt hwtest.rpt
 

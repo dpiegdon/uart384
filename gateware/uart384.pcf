@@ -1,3 +1,6 @@
+# uart384 hardware
+
+# UART port
 set_io --warn-no-port uart_dtr 1
 set_io --warn-no-port uart_dsr 2
 set_io --warn-no-port uart_txd 5
@@ -7,8 +10,10 @@ set_io --warn-no-port uart_cts 8
 set_io --warn-no-port uart_ri  31
 set_io --warn-no-port uart_dcd 32
 
+# clock
 set_io --warn-no-port clk32m   19
 
+# GPIO port
 set_io --warn-no-port gpio1    23
 set_io --warn-no-port gpio2    30
 set_io --warn-no-port gpio3    22
@@ -17,3 +22,17 @@ set_io --warn-no-port gpio5    20
 set_io --warn-no-port gpio6    27
 set_io --warn-no-port gpio7    18
 set_io --warn-no-port gpio8    26
+
+# LEDs
+# NOTE: these are dual-use for SPI flash connection
+#       only use when SPI_SS is HIGH
+set_io --warn-no-port led1     12
+set_io --warn-no-port led2     15
+
+# button
+# NOTE: these are dual-use for SPI flash connection.
+#       only use when SPI_SS is HIGH
+set_io --warn-no-port button   13
+
+# safety pull-ups
+set_io --warn-no-port SPI_SS   14

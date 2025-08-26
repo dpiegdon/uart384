@@ -20,9 +20,19 @@ module top(
 	output wire gpio5,
 	output wire gpio6,
 	output wire gpio7,
-	output wire gpio8);
+	output wire gpio8,
+
+	output wire led1,
+	output wire led2,
+	output wire button,
+	output wire SPI_SS);
+
 
 	parameter ENABLE_ADDITIONAL_RINGOSCILLATORS = 1;
+
+
+	/* pull SS high so we can safely use other SPI port signals */
+	assign SPI_SS = 1;
 
 
 	/* reset circuit */
