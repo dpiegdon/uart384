@@ -51,14 +51,20 @@
           "min_clearance": 0.5
         }
       },
-      "diff_pair_dimensions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
       "drc_exclusions": [
         [
-          "copper_edge_clearance|157835000|112201000|71ed64c1-bac7-4b98-86c3-319c1e1fa93f|f680e83d-122b-4181-8fe1-3043292c7c77",
+          "copper_edge_clearance|112920160|87817000|71ed64c1-bac7-4b98-86c3-319c1e1fa93f|f680e83d-122b-4181-8fe1-3043292c7c77",
           ""
         ],
         [
-          "copper_edge_clearance|161935000|112201000|71ed64c1-bac7-4b98-86c3-319c1e1fa93f|80ba4297-dda8-4354-868c-bf8638954725",
+          "copper_edge_clearance|117020160|87817000|71ed64c1-bac7-4b98-86c3-319c1e1fa93f|80ba4297-dda8-4354-868c-bf8638954725",
           ""
         ]
       ],
@@ -189,7 +195,9 @@
           "td_width_to_size_filter_ratio": 0.9
         }
       ],
-      "track_widths": [],
+      "track_widths": [
+        0.0
+      ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
           "corner_radius_percentage": 80,
@@ -216,7 +224,12 @@
           "spacing": 0.6
         }
       },
-      "via_dimensions": [],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false
     },
     "ipc2581": {
@@ -495,7 +508,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "production/uart384-v1.0/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
@@ -624,7 +637,7 @@
     },
     "net_format_name": "",
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "production/uart384-v1.0/",
     "space_save_all_events": true,
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",

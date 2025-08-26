@@ -4,6 +4,13 @@
 	(generator_version "9.0")
 	(uuid "951aeac3-6c61-42a5-aa61-f58713889333")
 	(paper "A4")
+	(title_block
+		(title "UART384")
+		(date "2025-08-26")
+		(rev "v1.0")
+		(comment 1 "a USB/UART enabled dev-board for the ice40LP384")
+		(comment 2 "https://github.com/dpiegdon/uart384")
+	)
 	(lib_symbols
 		(symbol "Connector:TC2050"
 			(exclude_from_sim no)
