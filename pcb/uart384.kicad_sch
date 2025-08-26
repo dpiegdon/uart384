@@ -7558,7 +7558,7 @@
 			(uuid "b9186abf-32e0-43f3-9e86-623c63bd1ddf")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR031")
 					(unit 1)
@@ -7622,7 +7622,7 @@
 			(uuid "10b582da-2918-4969-869b-32427b8d48dc")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR035")
 					(unit 1)
@@ -7686,7 +7686,7 @@
 			(uuid "a487a3b5-9123-4df8-a950-1d7efdaa94be")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR034")
 					(unit 1)
@@ -7754,7 +7754,7 @@
 			(uuid "f1da82c3-7583-48bb-9826-79361258b31f")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C5")
 					(unit 1)
@@ -7818,7 +7818,7 @@
 			(uuid "65b6dd16-009d-4b5d-9b1d-eb53e5ca0aa9")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR027")
 					(unit 1)
@@ -7882,7 +7882,7 @@
 			(uuid "892b23c5-f12a-4c5f-aafd-a3200a064c51")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR032")
 					(unit 1)
@@ -7946,7 +7946,7 @@
 			(uuid "d4f55a2e-c43e-4e24-a461-7cd72a76ed7e")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR037")
 					(unit 1)
@@ -8014,7 +8014,7 @@
 			(uuid "e597a8aa-2f37-43ac-9249-12bee4dd6c66")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C8")
 					(unit 1)
@@ -8078,7 +8078,7 @@
 			(uuid "3b8f2c49-bed2-4254-83d5-cc507d72326d")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR033")
 					(unit 1)
@@ -8143,7 +8143,7 @@
 			(uuid "6d2e237f-22c5-4cb9-aea1-62811125457b")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#FLG04")
 					(unit 1)
@@ -8209,7 +8209,7 @@
 			(uuid "8a219765-b342-4727-bf52-d0f252a31194")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C10")
 					(unit 1)
@@ -8273,7 +8273,7 @@
 			(uuid "a335551d-e7c4-4874-a32d-326d06b8c70a")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR038")
 					(unit 1)
@@ -8341,7 +8341,7 @@
 			(uuid "0b2d75cd-3acb-48ac-9376-038dedb313ac")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C7")
 					(unit 1)
@@ -8409,7 +8409,7 @@
 			(uuid "f9a667ac-e0cd-4a22-92e3-485e6dda3310")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C9")
 					(unit 1)
@@ -8477,7 +8477,7 @@
 			(uuid "c13ccaa9-827c-489e-9090-46bcb5f42cc8")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C6")
 					(unit 1)
@@ -8970,7 +8970,7 @@
 			(uuid "d9f73427-9374-4615-b726-2fd0c902e407")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR015")
 					(unit 1)
@@ -9036,7 +9036,7 @@
 			(uuid "df40bad6-4122-4967-8ebd-6dc2654d528d")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#FLG03")
 					(unit 1)
@@ -9171,7 +9171,7 @@
 			(uuid "5c3a03a8-cef9-40c7-870f-7d5705e282f4")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR024")
 					(unit 1)
@@ -9237,7 +9237,7 @@
 			(uuid "6a038a05-f5fc-472d-b786-c79dcddc0b35")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR011")
 					(unit 1)
@@ -9304,7 +9304,7 @@
 			(uuid "d2c887cc-42b0-4609-b61f-5e46242d0297")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C2")
 					(unit 1)
@@ -9504,7 +9504,7 @@
 			(uuid "c860708e-a862-4a38-aab0-584b41572bf4")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR01")
 					(unit 1)
@@ -9583,7 +9583,7 @@
 			(uuid "4671cdb0-9337-49d5-a394-1e67bd69381a")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "D2")
 					(unit 1)
@@ -9721,7 +9721,7 @@
 			(uuid "e8d1bbc1-0b44-4835-988b-b433c575de05")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR030")
 					(unit 1)
@@ -9789,7 +9789,7 @@
 			(uuid "bb7d2fe6-de1e-4c94-93d7-7fa7b3f4cd50")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "R8")
 					(unit 1)
@@ -9938,7 +9938,7 @@
 			(uuid "e3c325d9-6235-417e-83f2-1b5d4c713421")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "R6")
 					(unit 1)
@@ -10070,7 +10070,7 @@
 			(uuid "5825116c-62ed-41e8-8ffa-532ce98bef9a")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR07")
 					(unit 1)
@@ -10135,7 +10135,7 @@
 			(uuid "38bff87b-0157-4f65-94ee-c060b00efb9c")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR036")
 					(unit 1)
@@ -10201,7 +10201,7 @@
 			(uuid "734edf31-1215-47f7-84c3-01801b82a0e0")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR013")
 					(unit 1)
@@ -10270,7 +10270,7 @@
 			(uuid "f57d8a37-dd7e-483b-98e0-76a26950edee")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "C4")
 					(unit 1)
@@ -10400,7 +10400,7 @@
 			(uuid "13db40da-cd6a-46f3-a88c-5018795a4f24")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR029")
 					(unit 1)
@@ -10468,7 +10468,7 @@
 			(uuid "e6645699-7507-4a15-82b8-5154d718d3c5")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "D4")
 					(unit 1)
@@ -10532,7 +10532,7 @@
 			(uuid "e84a9fb9-2646-421c-9cd2-1443dbe21fc2")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR023")
 					(unit 1)
@@ -11102,7 +11102,7 @@
 			(uuid "52d8a4e2-c836-4bbc-8713-1193ad46f454")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR016")
 					(unit 1)
@@ -11328,7 +11328,7 @@
 			(uuid "52849853-10ad-4b3e-b485-6b320f7194f1")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "IC1")
 					(unit 1)
@@ -11407,7 +11407,7 @@
 			(uuid "2e874c79-8608-453c-9eae-7962e325d072")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "D3")
 					(unit 1)
@@ -11474,7 +11474,7 @@
 			(uuid "50caad05-ccee-4ed8-82ab-3c41cc517544")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR012")
 					(unit 1)
@@ -11540,7 +11540,7 @@
 			(uuid "d7809b4b-3168-4319-86da-302408f58e67")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR05")
 					(unit 1)
@@ -11606,7 +11606,7 @@
 			(uuid "bc12ae5f-9739-4122-86a2-f3fc12e6dd52")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR025")
 					(unit 1)
@@ -11672,7 +11672,7 @@
 			(uuid "988532c6-1f85-479e-9087-81990a6c2a4c")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR022")
 					(unit 1)
@@ -11805,7 +11805,7 @@
 			(uuid "8d8b91f8-5237-4821-bcdb-dfbb1e84e714")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#FLG02")
 					(unit 1)
@@ -12105,7 +12105,7 @@
 			(uuid "77726c0e-c2d5-47eb-8179-a782ee3031dc")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "R5")
 					(unit 1)
@@ -12236,7 +12236,7 @@
 			(uuid "63525d66-535d-46de-a22d-f24a9066d1f9")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR019")
 					(unit 1)
@@ -12396,7 +12396,7 @@
 			(uuid "7126639d-8463-4df4-9042-c4c1a0941d72")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "J2")
 					(unit 1)
@@ -12529,7 +12529,7 @@
 			(uuid "bbdf4cce-7799-483f-9f0b-93e5e398391c")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR018")
 					(unit 1)
@@ -12594,7 +12594,7 @@
 			(uuid "c1c58f24-8fea-4f1e-be22-69e70082dbe5")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR02")
 					(unit 1)
@@ -12671,7 +12671,7 @@
 			(uuid "644b775f-b243-457f-87a1-80f6ee52a7fc")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "U3")
 					(unit 1)
@@ -12737,7 +12737,7 @@
 			(uuid "2a79622d-2696-40e7-aaf5-c9b7966eb3cd")
 		)
 		(instances
-			(project "entropystick"
+			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR03")
 					(unit 1)
