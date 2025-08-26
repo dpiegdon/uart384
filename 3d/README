@@ -1,0 +1,19 @@
+export workflow:
+
+
+Option 1:
+
+- in KiCad PCB editor:
+  - plot silkscreen layers as DXF
+- in FreeCAD:
+  - use KiCadStepUp bench to import board, traces and silkscreens
+
+Option 2:
+
+- in KiCad PCB editor:
+  - export as STEP (with everything important enabled)
+- in FreeCAD:
+  - import STEP
+  - export as GLTF
+- in Blender:
+  - GLTF can be imported

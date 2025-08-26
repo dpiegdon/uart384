@@ -6,7 +6,7 @@ Lattice LP384 USB/UART stick
 
 <div>
 	<img width="75%" alt="PCBRendering"
-	 src="https://github.com/dpiegdon/uart384/blob/main/docs/uart384_pcb_rendering.jpg"/>
+     src="https://github.com/dpiegdon/uart384/blob/main/docs/uart384_pcb_rendering2.png"/>
 </div>
 
 This is a mini-devboard for the Lattice iCE40LP384, the *BEST* FPGA ever!
