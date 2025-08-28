@@ -1,5 +1,4 @@
 
-ARCH=ice40
 DEVICE=lp384
 PACKAGE=qn32
 PCF=uart384.pcf
@@ -19,23 +18,39 @@ TESTS=$(TESTBENCHES:%.v=%.test)
 
 .PRECIOUS: %.json %.asc %.bin %.rpt
 
-PROD_FILES= top.v \
+# source code grouped by feature:
+ENTROPY_FILES = \
+	verilog-buildingblocks/lattice_ice40/random.v \
+	verilog-buildingblocks/lattice_ice40/ringoscillator.v \
 	verilog-buildingblocks/binary_debias.v \
-	verilog-buildingblocks/clock_prescaler.v \
-	verilog-buildingblocks/lattice_$(ARCH)/random.v \
-	verilog-buildingblocks/lattice_$(ARCH)/ringoscillator.v \
+	verilog-buildingblocks/lfsr.v \
+	verilog-buildingblocks/random.v
+
+PRESCALER_FILES = \
+	verilog-buildingblocks/clock_prescaler.v
+
+RESET_FILES = \
+	verilog-buildingblocks/synchronous_reset_timer.v
+
+BUTTON_FILES = \
 	verilog-buildingblocks/lattice_ice40/debounced_button.v \
 	verilog-buildingblocks/lattice_ice40/pullup_input.v \
-	verilog-buildingblocks/lattice_ice40/tristate_output.v \
-	verilog-buildingblocks/lfsr.v \
-	verilog-buildingblocks/random.v \
-	verilog-buildingblocks/synchronous_reset_timer.v \
+	verilog-buildingblocks/lattice_ice40/tristate_output.v
+
+UART_FILES = \
 	verilog-buildingblocks/uart.v
 
-all: top.rpt hwtest.rpt
+
+# generic targets:
+all: entropy_generator.rpt uart_passthrough.rpt
 
 prog: top.bin
 	iceprog $<
+
+top.bin: entropy_generator.rpt
+	# currently selected "top" project -- only needed for `make prog`
+	-rm -f top.bin
+	ln -s $< top.bin
 
 run_tests: $(TESTS)
 	make -C verilog-buildingblocks run_tests
@@ -54,13 +69,25 @@ clean:
 	-rm *_tb.test
 	-rm *_tb.vcd
 
-graphs: $(subst .v,.png,$(PROD_FILES))
-
-top.json: $(PROD_FILES)
-
-top.dot: $(PROD_FILES)
+graphs: $(subst .v,.png,$(ENTROPY_GENERATOR_FILES)) $(subst .v,.png,$(UART_PASSTHROUGH_FILES))
 
 
+# specific projects:
+ENTROPY_GENERATOR_FILES = $(RESET_FILES) $(ENTROPY_FILES) $(UART_FILES) entropy_generator.v
+
+entropy_generator.json: $(ENTROPY_GENERATOR_FILES)
+
+entropy_generator.dot: $(ENTROPY_GENERATOR_FILES)
+
+
+UART_PASSTHROUGH_FILES = $(PRESCALER_FILES) uart_passthrough.v
+
+uart_passthrough.json: $(UART_PASSTHROUGH_FILES)
+
+uart_passthrough.dot: $(UART_PASSTHROUGH_FILES)
+
+
+# generic pattern rules
 %.dot: %.v
 	yosys -p '$(^:%.v=read_verilog %.v;) proc; opt -fine -full -share_all; show -colors 1 -width -stretch -format dot -prefix $(subst .dot,,$@)'
 	gvpr 'BEG_G { fname = sprintf("top__%s.dot",$$G.name); writeG($$G, fname); }' $@
