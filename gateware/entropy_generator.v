@@ -1,7 +1,25 @@
 `default_nettype none
 
-/* USB entropy generator */
-module top(
+/* USB entropy generator
+ *
+ * The FPGA is used in a feedback-loop configuration such that
+ * a metastable state is used as entropy source.
+ * This entropy is used to feed a linear feedback shift register,
+ * and every so-and-so bits a character of random data from that
+ * LFSR is output via UART to the host computer.
+ *
+ * The metastable state and a few other debugging signals are also
+ * output on the GPIO headers.
+ *
+ * On linux systems you can improve your system entropy with that.
+ * One simple variant is:
+ *
+ *	socat file:/dev/ttyACM0,b1000000,ignoreeof,cs8,raw STDOUT | sudo tee /dev/random | pv > /dev/null
+ *
+ * The UART can also receive data, but only the character 'r' is
+ * recognized and triggers an internal reset.
+ */
+module entropy_generator(
 	output wire uart_rxd,
 	input  wire uart_txd,
 	input  wire uart_rts,
@@ -24,11 +42,12 @@ module top(
 
 	output wire led1,
 	output wire led2,
-	output wire button,
+	input  wire button,
 	output wire SPI_SS);
 
 
-	parameter ENABLE_ADDITIONAL_RINGOSCILLATORS = 1;
+	parameter ENABLE_ADDITIONAL_RINGOSCILLATORS = 0;
+	parameter BAUDRATE = 1000000;
 
 
 	/* pull SS high so we can safely use other SPI port signals */
@@ -73,7 +92,7 @@ module top(
 	wire is_transmitting;
 	wire uart_received;
 	wire [7:0] uart_rxByte;
-	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000) ) uart(
+	uart #(.CLOCKFRQ(32000000), .BAUDRATE(BAUDRATE) ) uart(
 		.clk(clk32m),
 		.rst(rst),
 		.rx(uart_rxd),

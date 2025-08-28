@@ -27,21 +27,20 @@ NOTE: device is not programmable via USB
 
 
 Gateware
---------
+========
 
 "Why?" do you ask?
 
-Mostly for fun and training, but also because I want a mini board that
-generates cryptographically sound entropy.
+Mostly for fun and training; there are a few gateware options available in this repository:
 
-The FPGA can be used in a feedback-loop configuration such that a
-metastable state is used as entropy source. This entropy is used to feed
-a linear feedback shift register, and every so-and-so bits a character
-of random data from that LFSR is output via UART to the host computer.
+Entropy generator
+-----------------
 
-On linux systems you can improve your system entropy with that. One
-simple variant is:
+I want a mini board that generates cryptographically sound entropy
+that can be used to enhance system entropy on linux.
 
-```
-socat file:/dev/ttyACM0,b1000000,ignoreeof,cs8,raw STDOUT | sudo tee /dev/random | pv > /dev/null
-```
+UART pass-through
+-----------------
+
+A simple example that only passes UART signals along to the GPIO header
+and shows changes on RX/TX lines on the LEDs (with some timeout).
