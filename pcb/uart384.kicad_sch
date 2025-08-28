@@ -3489,19 +3489,21 @@
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "IC"
-				(at 0 -2.54 0)
+				(at 19.05 13.97 0)
 				(effects
 					(font
 						(size 1.524 1.524)
 					)
+					(justify right)
 				)
 			)
 			(property "Value" "ICE40LP384-SG32"
-				(at 0 0 0)
+				(at 19.05 16.51 0)
 				(effects
 					(font
 						(size 1.524 1.524)
 					)
+					(justify right)
 				)
 			)
 			(property "Footprint" ""
@@ -3521,7 +3523,7 @@
 				)
 			)
 			(property "Description" "Ultra low power FPGA with 384 LUTs in 32pin QFN package"
-				(at 0 0 0)
+				(at 0 -22.86 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -3550,7 +3552,7 @@
 			(symbol "ICE40LP384-SG32_0_1"
 				(rectangle
 					(start -20.32 30.48)
-					(end 20.32 -30.48)
+					(end 20.32 -25.4)
 					(stroke
 						(width 0)
 						(type solid)
@@ -3559,8 +3561,257 @@
 						(type background)
 					)
 				)
+				(polyline
+					(pts
+						(xy -11.43 0) (xy -8.89 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 21.59) (xy -11.43 21.59)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 21.59) (xy -6.35 19.05) (xy -8.89 16.51)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 16.51) (xy -11.43 16.51)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 15.24) (xy -11.43 15.24)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 15.24) (xy -6.35 12.7) (xy -6.35 7.62) (xy -8.89 5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 5.08) (xy -11.43 5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 0) (xy -6.35 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 -16.51) (xy -11.43 -16.51)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -8.89 -16.51) (xy -6.35 -13.97)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -6.35 -13.97) (xy -6.35 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 7.62 6.35) (xy 10.16 8.89)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 8.89) (xy 12.7 8.89)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 -3.81) (xy 12.7 -3.81)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 -3.81) (xy 7.62 -1.27) (xy 7.62 6.35)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 -3.81) (xy 7.62 -6.35) (xy 7.62 -19.05) (xy 10.16 -21.59)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 -21.59) (xy 12.7 -21.59)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 			)
 			(symbol "ICE40LP384-SG32_1_1"
+				(text "IO2"
+					(at -6.35 19.05 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+						(justify left)
+					)
+				)
+				(text "SPI"
+					(at -6.35 10.16 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+						(justify left)
+					)
+				)
+				(text "IO3"
+					(at -6.35 -7.62 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+						(justify left)
+					)
+				)
+				(text "IO1"
+					(at 7.62 2.54 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+						(justify right)
+					)
+				)
+				(text "IO0"
+					(at 7.62 -12.7 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+						(justify right)
+					)
+				)
 				(pin input line
 					(at -25.4 20.32 0)
 					(length 5.08)
@@ -3726,7 +3977,7 @@
 				(pin bidirectional line
 					(at -25.4 -8.89 0)
 					(length 5.08)
-					(name "6_GBIN"
+					(name "6_GBIN7"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3762,7 +4013,7 @@
 				(pin bidirectional line
 					(at -25.4 -15.24 0)
 					(length 5.08)
-					(name "8_GBIN"
+					(name "8_GBIN6"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3777,46 +4028,10 @@
 						)
 					)
 				)
-				(pin bidirectional line
-					(at -25.4 -17.78 0)
-					(length 5.08)
-					(name "18"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "18"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at -25.4 -20.32 0)
-					(length 5.08)
-					(name "19_GBIN"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "19"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
 				(pin power_in line
 					(at -11.43 35.56 270)
 					(length 5.08)
-					(name "VCCIO"
+					(name "VCC_IO3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3834,7 +4049,7 @@
 				(pin power_in line
 					(at -8.89 35.56 270)
 					(length 5.08)
-					(name "VCCIO"
+					(name "VCC_IO2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3852,7 +4067,7 @@
 				(pin power_in line
 					(at -6.35 35.56 270)
 					(length 5.08)
-					(name "VCCIO"
+					(name "VCC_IO1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3870,7 +4085,7 @@
 				(pin power_in line
 					(at -3.81 35.56 270)
 					(length 5.08)
-					(name "VCCIO"
+					(name "VCC_IO0"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3886,7 +4101,7 @@
 					)
 				)
 				(pin power_in line
-					(at -1.27 -35.56 90)
+					(at -1.27 -30.48 90)
 					(length 5.08)
 					(name "GND"
 						(effects
@@ -3922,7 +4137,7 @@
 					)
 				)
 				(pin power_in line
-					(at 1.27 -35.56 90)
+					(at 1.27 -30.48 90)
 					(length 5.08)
 					(name "GND"
 						(effects
@@ -3940,7 +4155,7 @@
 					)
 				)
 				(pin no_connect non_logic
-					(at 3.81 -35.56 90)
+					(at 3.81 -30.48 90)
 					(length 5.08)
 					(hide yes)
 					(name "center_pad"
@@ -3995,9 +4210,45 @@
 					)
 				)
 				(pin bidirectional line
+					(at 25.4 7.62 180)
+					(length 5.08)
+					(name "18"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "18"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 25.4 5.08 180)
+					(length 5.08)
+					(name "19_GBIN3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "19"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
 					(at 25.4 2.54 180)
 					(length 5.08)
-					(name "20_GBIN"
+					(name "20_GBIN2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4087,7 +4338,7 @@
 				(pin bidirectional line
 					(at 25.4 -11.43 180)
 					(length 5.08)
-					(name "29_GBIN"
+					(name "29_GBIN0"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4105,7 +4356,7 @@
 				(pin bidirectional line
 					(at 25.4 -13.97 180)
 					(length 5.08)
-					(name "30_GBIN"
+					(name "30_GBIN1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5006,7 +5257,7 @@
 		(uuid "b21f3037-bde3-4de7-b72a-63d30f76e59d")
 	)
 	(junction
-		(at 227.33 156.21)
+		(at 227.33 151.13)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "b56849c4-68d7-40cd-95a8-d203a317f202")
@@ -5241,7 +5492,7 @@
 	)
 	(wire
 		(pts
-			(xy 203.2 135.89) (xy 195.58 135.89)
+			(xy 254 110.49) (xy 261.62 110.49)
 		)
 		(stroke
 			(width 0)
@@ -5281,7 +5532,7 @@
 	)
 	(wire
 		(pts
-			(xy 227.33 153.67) (xy 227.33 156.21)
+			(xy 227.33 148.59) (xy 227.33 151.13)
 		)
 		(stroke
 			(width 0)
@@ -5541,7 +5792,7 @@
 	)
 	(wire
 		(pts
-			(xy 227.33 156.21) (xy 229.87 156.21)
+			(xy 227.33 151.13) (xy 229.87 151.13)
 		)
 		(stroke
 			(width 0)
@@ -5611,7 +5862,7 @@
 	)
 	(wire
 		(pts
-			(xy 229.87 156.21) (xy 229.87 153.67)
+			(xy 229.87 151.13) (xy 229.87 148.59)
 		)
 		(stroke
 			(width 0)
@@ -6101,7 +6352,7 @@
 	)
 	(wire
 		(pts
-			(xy 227.33 156.21) (xy 227.33 158.75)
+			(xy 227.33 151.13) (xy 227.33 153.67)
 		)
 		(stroke
 			(width 0)
@@ -6421,7 +6672,7 @@
 	)
 	(wire
 		(pts
-			(xy 203.2 138.43) (xy 195.58 138.43)
+			(xy 254 113.03) (xy 261.62 113.03)
 		)
 		(stroke
 			(width 0)
@@ -6980,12 +7231,12 @@
 		(uuid "06b5a348-7189-4bb1-83ce-4d7ad001a098")
 	)
 	(label "GPIO7"
-		(at 195.58 135.89 180)
+		(at 261.62 110.49 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
 		(uuid "12163d92-3114-4383-8ffb-8989749064d5")
 	)
@@ -7330,12 +7581,12 @@
 		(uuid "9ff07980-fcd7-4ef2-a51e-b44ebd523b53")
 	)
 	(label "CLK32M"
-		(at 195.58 138.43 180)
+		(at 261.62 113.03 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
 		(uuid "a6f09bbf-c51f-4a91-9067-19e22d4d3e15")
 	)
@@ -7575,7 +7826,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 227.33 158.75 0)
+		(at 227.33 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7583,7 +7834,7 @@
 		(dnp no)
 		(uuid "00000000-0000-0000-0000-00005d34337d")
 		(property "Reference" "#PWR035"
-			(at 227.33 165.1 0)
+			(at 227.33 160.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7592,7 +7843,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 227.457 163.1442 0)
+			(at 227.457 158.0642 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7600,7 +7851,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 227.33 158.75 0)
+			(at 227.33 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7609,7 +7860,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 227.33 158.75 0)
+			(at 227.33 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7618,7 +7869,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 227.33 158.75 0)
+			(at 227.33 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11194,7 +11445,7 @@
 		(dnp no)
 		(uuid "aa8b7b49-16ae-4ad0-8dfc-501250444633")
 		(property "Reference" "IC1"
-			(at 228.6 116.84 0)
+			(at 246.38 101.6 0)
 			(effects
 				(font
 					(size 1.524 1.524)
@@ -11202,7 +11453,7 @@
 			)
 		)
 		(property "Value" "ICE40LP384-SG32"
-			(at 228.6 119.38 0)
+			(at 237.49 104.14 0)
 			(effects
 				(font
 					(size 1.524 1.524)
