@@ -1,6 +1,6 @@
 `default_nettype none
 
-/* USB entropy generator
+/* USB entropy generator.
  *
  * The FPGA is used in a feedback-loop configuration such that
  * a metastable state is used as entropy source.

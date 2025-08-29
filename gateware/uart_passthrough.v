@@ -1,6 +1,6 @@
 `default_nettype none
 
-/* simple USB UART pass-through
+/* Simple USB UART pass-through.
  *
  * This only connects the lines, does nothing to the signals.
  * Should be baudrate-agnostic.

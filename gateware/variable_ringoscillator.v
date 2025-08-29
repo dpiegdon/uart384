@@ -1,6 +1,14 @@
 `default_nettype none
 
-module clocktests(
+/* Variable delay ring oscillator.
+ *
+ * Ring oscillator with a configurable delay line
+ * than can be changed via UART input:
+ *    '['  decrease delay
+ *    ']'  increase delay
+ *    'r'  reset to shortest delay
+ */
+module variable_ringoscillator(
 	output wire uart_rxd,
 	input  wire uart_txd,
 	input  wire uart_rts,
@@ -28,6 +36,7 @@ module clocktests(
 
 	parameter TAPS = 16;
 
+	// variable delay ring oscillator
 	wire out;
 	ringoscillator_adjustable #(.MAX_TAPS(TAPS), .PREFIX_DELAYS(0), .TAP_DELAYS(1)) osci(out, tap, rst);
 	reg [$clog2(TAPS-1)+1:0] tap = 0;
@@ -38,7 +47,7 @@ module clocktests(
 	wire [7:0] uart_rxByte;
 	reg tx_now;
 	wire tx_word = tap + 8'h21;
-	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000) ) uart(
+	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000)) uart(
 		.clk(clk32m),
 		.rst(0),
 		.rx(uart_txd),
