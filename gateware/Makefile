@@ -47,7 +47,7 @@ all: entropy_generator.rpt uart_passthrough.rpt
 prog: top.bin
 	iceprog $<
 
-top.bin: entropy_generator.rpt
+top.bin: clocktests.bin
 	# currently selected "top" project -- only needed for `make prog`
 	-rm -f top.bin
 	ln -s $< top.bin
@@ -85,6 +85,12 @@ UART_PASSTHROUGH_FILES = $(PRESCALER_FILES) uart_passthrough.v
 uart_passthrough.json: $(UART_PASSTHROUGH_FILES)
 
 uart_passthrough.dot: $(UART_PASSTHROUGH_FILES)
+
+CLOCKTESTS_FILES = clocktests.v $(ENTROPY_FILES) $(UART_FILES)
+
+clocktests.json: $(CLOCKTESTS_FILES)
+
+clocktests.dot: $(CLOCKTESTS_FILES)
 
 
 # generic pattern rules
