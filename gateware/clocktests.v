@@ -33,19 +33,22 @@ module clocktests(
 	reg [$clog2(TAPS-1)+1:0] tap = 0;
 
 	// UART
+	wire is_transmitting;
 	wire uart_received;
 	wire [7:0] uart_rxByte;
+	reg tx_now;
+	wire tx_word = tap + 8'h21;
 	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000) ) uart(
 		.clk(clk32m),
 		.rst(0),
 		.rx(uart_txd),
 		.tx(uart_rxd),
-		.transmit(0),
+		.transmit(!is_transmitting & tx_now),
 		.tx_byte(0),
 		.received(uart_received),
 		.rx_byte(uart_rxByte),
 		.is_receiving(),
-		.is_transmitting(),
+		.is_transmitting(is_transmitting),
 		.recv_error()
 	);
 
@@ -58,14 +61,18 @@ module clocktests(
 		if(tap_up) begin
 			rst = 1;
 			tap = tap+1;
+			tx_now = 1;
 		end else if(tap_down) begin
 			rst = 1;
 			tap = tap-1;
+			tx_now = 1;
 		end else if(tap_rst) begin
 			rst = 1;
 			tap = 0;
+			tx_now = 1;
 		end else begin
 			rst = 0;
+			tx_now = 0;
 		end
 	end
 
