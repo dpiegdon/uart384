@@ -29,14 +29,14 @@ NOTE: device is not programmable via USB
 Gateware
 ========
 
-"Why?" do you ask?
+"Why?", you ask?
 
 Mostly for fun and training; there are a few gateware options available in this repository:
 
 Entropy generator
 -----------------
 
-I want a mini board that generates cryptographically sound entropy
+I wanted a mini board that generates cryptographically sound entropy
 that can be used to enhance system entropy on linux.
 
 UART pass-through
@@ -44,3 +44,9 @@ UART pass-through
 
 A simple example that only passes UART signals along to the GPIO header
 and shows changes on RX/TX lines on the LEDs (with some timeout).
+
+Variable delay ring oscillator
+------------------------------
+
+Experiments with a ringoscillator with a reconfigurable delay-line.
+Delay can be changed at runtime via UART.

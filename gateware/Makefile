@@ -42,12 +42,12 @@ UART_FILES = \
 
 
 # generic targets:
-all: entropy_generator.rpt uart_passthrough.rpt
+all: entropy_generator.rpt uart_passthrough.rpt variable_ringoscillator.rpt
 
 prog: top.bin
 	iceprog $<
 
-top.bin: clocktests.bin
+top.bin: variable_ringoscillator.bin
 	# currently selected "top" project -- only needed for `make prog`
 	-rm -f top.bin
 	ln -s $< top.bin
@@ -86,11 +86,11 @@ uart_passthrough.json: $(UART_PASSTHROUGH_FILES)
 
 uart_passthrough.dot: $(UART_PASSTHROUGH_FILES)
 
-CLOCKTESTS_FILES = clocktests.v $(ENTROPY_FILES) $(UART_FILES)
+VARIABLE_RINGOSCILLATOR_FILES = variable_ringoscillator.v $(ENTROPY_FILES) $(UART_FILES)
 
-clocktests.json: $(CLOCKTESTS_FILES)
+variable_ringoscillator.json: $(VARIABLE_RINGOSCILLATOR_FILES)
 
-clocktests.dot: $(CLOCKTESTS_FILES)
+variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 
 
 # generic pattern rules
