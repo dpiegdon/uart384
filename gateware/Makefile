@@ -102,7 +102,8 @@ variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 	for F in $(subst .dot,,$<)__*.dot ; do dot -Tpng $$F > $$F.png; done;
 
 %_tb.test: %_tb.v %.v
-	iverilog -o $@ $^
+	verilator +1800-2012ext+v --lint-only -Wall --bbox-unsup $<
+	iverilog  -g2012 -Wall -Wno-timescale -o $@ $^
 
 %.json: %.v
 	yosys -Q $(QUIET) -p 'proc; opt_clean; opt -fine -full -share_all; synth_ice40 -dff -top $(subst .v,,$<) -json $@' $^

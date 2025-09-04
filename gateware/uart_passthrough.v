@@ -27,9 +27,9 @@ module uart_passthrough(
 	input  wire gpio7,
 	input  wire gpio8,
 
-	output wire led1,
-	output wire led2,
-	input  wire button,
+	output wire SPI_SDO_led1,
+	output wire SPI_SCK_led2,
+	input  wire SPI_SDI_button,
 	output wire SPI_SS);
 
 	parameter LED_TIMEOUT = 25;
@@ -63,8 +63,8 @@ module uart_passthrough(
 	wire txd_timed_out = (txd_led_timeout == 0);
 	wire rxd_timed_out = (rxd_led_timeout == 0);
 
-	assign led1 = txd_timed_out;
-	assign led2 = rxd_timed_out;
+	assign SPI_SDO_led1 = txd_timed_out;
+	assign SPI_SCK_led2 = rxd_timed_out;
 
 	always @(negedge uart_txd, posedge clk) begin
 		if(uart_txd == 0) begin

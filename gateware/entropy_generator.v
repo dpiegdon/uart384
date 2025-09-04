@@ -40,9 +40,9 @@ module entropy_generator(
 	output wire gpio7,
 	output wire gpio8,
 
-	output wire led1,
-	output wire led2,
-	input  wire button,
+	output wire SPI_SDO_led1,
+	output wire SPI_SCK_led2,
+	input  wire SPI_SDI_button,
 	output wire SPI_SS);
 
 
