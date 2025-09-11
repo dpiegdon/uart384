@@ -9,8 +9,7 @@
 	(paper "A5")
 	(title_block
 		(title "UART384")
-		(date "2025-08-26")
-		(rev "v1.0")
+		(rev "v1.1~dev")
 		(comment 1 "a USB/UART enabled dev-board for the ice40LP384")
 		(comment 2 "https://github.com/dpiegdon/uart384")
 	)
@@ -6474,7 +6473,7 @@
 				)
 			)
 		)
-		(property "Value" "AT25DF256-XMHN-T"
+		(property "Value" "AT25DF256-SSHN"
 			(at 0 3.4 90)
 			(layer "F.Fab")
 			(uuid "668a6162-0119-4d39-a659-ee1021bdd48a")
@@ -6497,7 +6496,7 @@
 				)
 			)
 		)
-		(property "Description" "8-Mbit, 2.5V Minimum SPI Serial Flash Memory with Dual-I/O and Quad-I/O Support, SOIC-8"
+		(property "Description" "Any 3.3V SPI flash with >= 128KBit, SOIC-8 150mil or SOP-8 150mil"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
