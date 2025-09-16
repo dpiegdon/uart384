@@ -118,7 +118,7 @@ variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 	iverilog  -g2012 -Wall -Wno-timescale -o $@ $^
 
 %.json: %.v
-	yosys -Q $(QUIET) -p 'proc; opt_clean; opt -fine -full -share_all; synth_ice40 -dff -top $(subst .v,,$<) -json $@' $^
+	yosys -Q $(QUIET) -p 'proc; opt_clean; opt -fine -full -share_all; synth_ice40 -dff -abc2 -top $(subst .v,,$<) -json $@' $^
 
 %.asc: %.json
 	nextpnr-ice40 $(QUIET) $(SEED) $(PLACER) --ignore-loops --promote-logic --opt-timing --$(DEVICE) --package $(PACKAGE) --pcf $(PCF) --json $< --asc $@
