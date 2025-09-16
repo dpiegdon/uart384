@@ -116,7 +116,7 @@ variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 
 # generic pattern rules
 %.dot: %.v
-	yosys -p '$(^:%.v=read_verilog %.v;) proc; opt -fine -full -share_all; show -colors 1 -width -stretch -format dot -prefix $(subst .dot,,$(notdir $@))'
+	yosys -p '$(^:%.v=read_verilog %.v;) proc; opt_clean -purge; opt -fine -full -share_all; show -colors 1 -width -stretch -format dot -prefix $(subst .dot,,$(notdir $@))'
 	# demux multiple graphs from one file:
 	gvpr 'BEG_G { fname = sprintf("$(subst .dot,,$(notdir $@))__%s.dot",$$G.name); writeG($$G, fname); }' $(notdir $@)
 
@@ -131,7 +131,7 @@ variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 	iverilog  -g2012 -Wall -Wno-timescale -o $@ $^
 
 %.json: %.v
-	yosys -Q $(QUIET) -p 'proc; opt_clean; opt -fine -full -share_all; synth_ice40 -dff -abc2 -top $(subst .v,,$<) -json $@' $^
+	yosys -Q $(QUIET) -p 'proc; opt_clean -purge; opt -fine -full -share_all; synth_ice40 -dff -abc2 -top $(subst .v,,$<) -json $@' $^
 
 %.asc: %.json
 	nextpnr-ice40 $(QUIET) $(SEED) $(PLACER) --ignore-loops --promote-logic --opt-timing --$(DEVICE) --package $(PACKAGE) --pcf $(PCF) --json $< --asc $@
