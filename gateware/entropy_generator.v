@@ -25,7 +25,7 @@ module entropy_generator(
 	output wire uart_dcd,
 	output wire uart_ri,
 
-	input  wire clk32m,
+	input  wire clk,
 
 	output wire gpio1,
 	output wire gpio2,
@@ -49,7 +49,7 @@ module entropy_generator(
 	wire rng_valid;
 	wire out_received;
 	wire metastable;
-	randomized_spongent rng(.clk(clk32m),
+	randomized_spongent rng(.clk(clk),
 				.rst(0),
 				.out(rng_out),
 				.out_valid(rng_valid),
@@ -61,7 +61,7 @@ module entropy_generator(
 	wire do_transmit;
 	wire [7:0] tx_byte;
 	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000) ) uart(
-		.clk(clk32m),
+		.clk(clk),
 		.rst(0),
 		.rx(0),
 		.tx(uart_rxd),

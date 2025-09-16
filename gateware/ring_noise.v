@@ -29,7 +29,7 @@ module ring_noise(
 	output wire uart_dcd,
 	output wire uart_ri,
 
-	input  wire clk32m,
+	input  wire clk,
 
 	output wire gpio1,
 	output wire gpio2,
@@ -57,7 +57,7 @@ module ring_noise(
 	/* reset circuit */
 	wire reset_in;
 	wire rst;
-	synchronous_reset_timer resetter(clk32m, rst, reset_in);
+	synchronous_reset_timer resetter(clk, rst, reset_in);
 
 
 	/* random noise generators */
@@ -83,7 +83,7 @@ module ring_noise(
 	wire word_ready;
 	wire bit_ready;
 	wire metastable;
-	randomized_lfsr randomized_lfsr(clk32m, rst, bit_ready, word_ready, lfsr, metastable);
+	randomized_lfsr randomized_lfsr(clk, rst, bit_ready, word_ready, lfsr, metastable);
 
 	assign gpio1 = metastable;
 
@@ -93,7 +93,7 @@ module ring_noise(
 	wire uart_received;
 	wire [7:0] uart_rxByte;
 	uart #(.CLOCKFRQ(32000000), .BAUDRATE(BAUDRATE) ) uart(
-		.clk(clk32m),
+		.clk(clk),
 		.rst(rst),
 		.rx(uart_rxd),
 		.tx(uart_txd),

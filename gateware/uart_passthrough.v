@@ -16,7 +16,7 @@ module uart_passthrough(
 	output wire uart_dcd,
 	output wire uart_ri,
 
-	input  wire clk32m,
+	input  wire clk,
 
 	input  wire gpio1,
 	output wire gpio2,
@@ -41,8 +41,8 @@ module uart_passthrough(
 
 	/* internal timing reference (ca. 122Hz) */
 	reg [17:0] clk_prescaled;
-	clock_prescaler #(.WIDTH(18)) clk_prescaler(clk32m, clk_prescaled, 0);
-	wire clk = clk_prescaled[17];
+	clock_prescaler #(.WIDTH(18)) clk_prescaler(clk, clk_prescaled, 0);
+	wire clk_slow = clk_prescaled[17];
 
 
 	/* pass-through of UART signals */
@@ -66,7 +66,7 @@ module uart_passthrough(
 	assign SPI_SDO_led1 = txd_timed_out;
 	assign SPI_SCK_led2 = rxd_timed_out;
 
-	always @(negedge uart_txd, posedge clk) begin
+	always @(negedge uart_txd, posedge clk_slow) begin
 		if(uart_txd == 0) begin
 			txd_led_timeout = LED_TIMEOUT;
 		end else begin
@@ -74,7 +74,7 @@ module uart_passthrough(
 		end
 	end
 
-	always @(negedge uart_rxd, posedge clk) begin
+	always @(negedge uart_rxd, posedge clk_slow) begin
 		if(uart_rxd == 0) begin
 			rxd_led_timeout = LED_TIMEOUT;
 		end else begin

@@ -11,7 +11,7 @@ set_io --warn-no-port uart_ri  31
 set_io --warn-no-port uart_dcd 32
 
 # clock
-set_io --warn-no-port clk32m   19
+set_io --warn-no-port clk      19
 
 # GPIO port
 set_io --warn-no-port gpio1    23

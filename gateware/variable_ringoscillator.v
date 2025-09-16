@@ -18,7 +18,7 @@ module variable_ringoscillator(
 	output wire uart_dcd,
 	output wire uart_ri,
 
-	input  wire clk32m,
+	input  wire clk,
 
 	output wire gpio1,
 	output wire gpio2,
@@ -48,7 +48,7 @@ module variable_ringoscillator(
 	reg tx_now;
 	wire tx_word = tap + 8'h21;
 	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000)) uart(
-		.clk(clk32m),
+		.clk(clk),
 		.rst(0),
 		.rx(uart_txd),
 		.tx(uart_rxd),
@@ -66,7 +66,7 @@ module variable_ringoscillator(
 	wire tap_rst  = uart_received && (uart_rxByte == 8'h72);
 	reg rst = 1;
 
-	always @(posedge clk32m) begin
+	always @(posedge clk) begin
 		if(tap_up) begin
 			rst = 1;
 			tap = tap+1;
@@ -92,6 +92,6 @@ module variable_ringoscillator(
 
 	assign SPI_SDO_led1 = uart_counter;
 
-	assign gpio2 = clk32m;
+	assign gpio2 = clk;
 	assign gpio4 = out;
 endmodule
