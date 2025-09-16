@@ -6,6 +6,7 @@ gateware/*.json
 gateware/*.rpt
 gateware/*_tb.test
 gateware/*_tb.vcd
+gateware/*_tb.fst
 gateware/*.dot
 gateware/*.png
 pcb/*.bak

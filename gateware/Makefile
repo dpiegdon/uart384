@@ -8,8 +8,10 @@ PCF=uart384.pcf
 # RNG seed for nextpnr-ice40. Try different values if you have not fully utilized the FPGAs logic but get placement issues.
 # Otherwise keep fixed to get a deterministic behavior.
 # You can also use `-r` to try random values. The used seed is listed in the output.
-#SEED=--seed=774337092
+SEED=--seed=774337092
 #SEED=-r
+# the size-constrained LP384 seems to work better with `sa' placing algorithm. some designs don't work with the standard placer `heap', or at least not very well.
+PLACER=--placer sa
 
 TESTBENCHES=$(wildcard *_tb.v)
 TESTS=$(TESTBENCHES:%.v=%.test)
@@ -24,7 +26,9 @@ ENTROPY_FILES = \
 	verilog-buildingblocks/lattice_ice40/ringoscillator.v \
 	verilog-buildingblocks/binary_debias.v \
 	verilog-buildingblocks/lfsr.v \
-	verilog-buildingblocks/random.v
+	verilog-buildingblocks/random.v \
+	verilog-buildingblocks/spongent_hash.v \
+	verilog-buildingblocks/randomized_spongent.v
 
 PRESCALER_FILES = \
 	verilog-buildingblocks/clock_prescaler.v
@@ -42,12 +46,12 @@ UART_FILES = \
 
 
 # generic targets:
-all: entropy_generator.rpt uart_passthrough.rpt variable_ringoscillator.rpt
+all: entropy_generator.rpt ring_noise.rpt uart_passthrough.rpt variable_ringoscillator.rpt
 
 prog: top.bin
 	iceprog $<
 
-top.bin: variable_ringoscillator.bin
+top.bin: entropy_generator.bin
 	# currently selected "top" project -- only needed for `make prog`
 	-rm -f top.bin
 	ln -s $< top.bin
@@ -80,11 +84,19 @@ entropy_generator.json: $(ENTROPY_GENERATOR_FILES)
 entropy_generator.dot: $(ENTROPY_GENERATOR_FILES)
 
 
+RINGOSCILLATOR_FILES = $(RESET_FILES) $(ENTROPY_FILES) $(UART_FILES) ring_noise.v
+
+ring_noise.json: $(RINGOSCILLATOR_FILES)
+
+ring_noise.dot: $(RINGOSCILLATOR_FILES)
+
+
 UART_PASSTHROUGH_FILES = $(PRESCALER_FILES) uart_passthrough.v
 
 uart_passthrough.json: $(UART_PASSTHROUGH_FILES)
 
 uart_passthrough.dot: $(UART_PASSTHROUGH_FILES)
+
 
 VARIABLE_RINGOSCILLATOR_FILES = variable_ringoscillator.v $(ENTROPY_FILES) $(UART_FILES)
 
@@ -109,7 +121,7 @@ variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 	yosys -Q $(QUIET) -p 'proc; opt_clean; opt -fine -full -share_all; synth_ice40 -dff -top $(subst .v,,$<) -json $@' $^
 
 %.asc: %.json
-	nextpnr-ice40 $(QUIET) $(SEED) --ignore-loops --promote-logic --opt-timing --$(DEVICE) --package $(PACKAGE) --pcf $(PCF) --json $< --asc $@
+	nextpnr-ice40 $(QUIET) $(SEED) $(PLACER) --ignore-loops --promote-logic --opt-timing --$(DEVICE) --package $(PACKAGE) --pcf $(PCF) --json $< --asc $@
 
 %.bin: %.asc
 	icepack $< $@

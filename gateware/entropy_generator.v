@@ -45,73 +45,35 @@ module entropy_generator(
 	input  wire SPI_SDI_button,
 	output wire SPI_SS);
 
-
-	parameter ENABLE_ADDITIONAL_RINGOSCILLATORS = 0;
-	parameter BAUDRATE = 1000000;
-
-
 	/* pull SS high so we can safely use other SPI port signals */
 	assign SPI_SS = 1;
 
 
-	/* reset circuit */
-	wire reset_in;
-	wire rst;
-	synchronous_reset_timer resetter(clk32m, rst, reset_in);
 
-
-	/* random noise generators */
-	generate
-		/* optional ringoscillator outputs */
-		if(ENABLE_ADDITIONAL_RINGOSCILLATORS) begin : extra_ringoscillators
-			wire r_out_insane;
-			ringoscillator #(.DELAY_LUTS(0)) ringosci_insane(r_out_insane);
-
-			wire r_out_fast;
-			ringoscillator #(.DELAY_LUTS(1)) ringosci_fast(r_out_fast);
-
-			wire r_out_slow;
-			ringoscillator #(.DELAY_LUTS(20)) ringosci_slow(r_out_slow);
-
-			assign gpio5 = r_out_insane;
-			assign gpio6 = r_out_fast;
-			assign gpio7 = r_out_slow;
-		end
-	endgenerate
-
-	wire [15:0] lfsr;
-	wire word_ready;
-	wire bit_ready;
-	wire metastable;
-	randomized_lfsr randomized_lfsr(clk32m, rst, bit_ready, word_ready, lfsr, metastable);
-
-	assign gpio1 = metastable;
-
-
-	/* UART implementation */
+	wire [7:0] rng_out;
+	wire rng_valid;
 	wire is_transmitting;
-	wire uart_received;
-	wire [7:0] uart_rxByte;
-	uart #(.CLOCKFRQ(32000000), .BAUDRATE(BAUDRATE) ) uart(
+
+	/* source of good randomness */
+	randomized_spongent rng(.clk(clk32m),
+				.rst(0),
+				.out(rng_out),
+				.out_valid(rng_valid),
+				.out_received(is_transmitting),
+				.metastable());
+
+	/* UART downstream */
+	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000) ) uart(
 		.clk(clk32m),
-		.rst(rst),
-		.rx(uart_rxd),
-		.tx(uart_txd),
-		.transmit(!is_transmitting & word_ready),
-		.tx_byte(lfsr[7:0]),
-		.received(uart_received),
-		.rx_byte(uart_rxByte),
+		.rst(0),
+		.rx(0),
+		.tx(uart_rxd),
+		.transmit(!is_transmitting & rng_valid),
+		.tx_byte(rng_out),
+		.received(),
+		.rx_byte(),
 		.is_receiving(),
 		.is_transmitting(is_transmitting),
 		.recv_error()
 	);
-
-	assign reset_in = uart_received && (uart_rxByte == 8'h72);
-	assign gpio2 = lfsr[0];
-	assign gpio3 = bit_ready;
-	assign gpio4 = word_ready;
-
-
-	/* debugging outputs */
-	assign gpio8 = rst;
 endmodule
