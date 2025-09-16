@@ -44,9 +44,14 @@ BUTTON_FILES = \
 UART_FILES = \
 	verilog-buildingblocks/uart.v
 
+TOPLEVEL_FILES = \
+	entropy_generator.v \
+	ring_noise.v \
+	uart_passthrough.v \
+	variable_ringoscillator.v
 
 # generic targets:
-all: entropy_generator.rpt ring_noise.rpt uart_passthrough.rpt variable_ringoscillator.rpt
+all: $(subst .v,.rpt,$(TOPLEVEL_FILES))
 
 prog: top.bin
 	iceprog $<
@@ -73,8 +78,12 @@ clean:
 	-rm *_tb.test
 	-rm *_tb.vcd
 
-graphs: $(subst .v,.png,$(ENTROPY_GENERATOR_FILES)) $(subst .v,.png,$(UART_PASSTHROUGH_FILES))
-
+graphs: $(subst .v,.png,$(ENTROPY_FILES))	\
+	$(subst .v,.png,$(PRESCALER_FILES))	\
+	$(subst .v,.png,$(RESET_FILES))		\
+	$(subst .v,.png,$(BUTTON_FILES))	\
+	$(subst .v,.png,$(UART_FILES))		\
+	$(subst .v,.png,$(TOPLEVEL_FILES))
 
 # specific projects:
 ENTROPY_GENERATOR_FILES = $(RESET_FILES) $(ENTROPY_FILES) $(UART_FILES) entropy_generator.v
@@ -107,11 +116,15 @@ variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 
 # generic pattern rules
 %.dot: %.v
-	yosys -p '$(^:%.v=read_verilog %.v;) proc; opt -fine -full -share_all; show -colors 1 -width -stretch -format dot -prefix $(subst .dot,,$@)'
-	gvpr 'BEG_G { fname = sprintf("top__%s.dot",$$G.name); writeG($$G, fname); }' $@
+	yosys -p '$(^:%.v=read_verilog %.v;) proc; opt -fine -full -share_all; show -colors 1 -width -stretch -format dot -prefix $(subst .dot,,$(notdir $@))'
+	# demux multiple graphs from one file:
+	gvpr 'BEG_G { fname = sprintf("$(subst .dot,,$(notdir $@))__%s.dot",$$G.name); writeG($$G, fname); }' $(notdir $@)
 
 %.png: %.dot
-	for F in $(subst .dot,,$<)__*.dot ; do dot -Tpng $$F > $$F.png; done;
+	# actually create PNGs for all the demuxed modules, not the parent file
+	for F in $(subst .dot,,$(notdir $<))__*.dot  ; do $$F; dot -Tpng $$F > $$F.png; done;
+	# and delete the parent file
+	-rm $(notdir $<)
 
 %_tb.test: %_tb.v %.v
 	verilator +1800-2012ext+v --lint-only -Wall --bbox-unsup $<
