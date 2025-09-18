@@ -4,7 +4,7 @@
  *
  * The FPGA is used in a feedback-loop configuration such that
  * a metastable state is used as entropy source.
- * This entropy is used to feed a hashing algorithm and then 
+ * This entropy is used to feed a hashing algorithm and then
  * output via UART to the host computer.
  *
  * The metastable state and other debugging signals are also
@@ -36,8 +36,8 @@ module entropy_generator(
 	output wire gpio7,
 	output wire gpio8,
 
-	output wire SPI_SDO_led1,
-	output wire SPI_SCK_led2,
+	output wire SPI_SDO_led1_red,
+	output wire SPI_SCK_led2_green,
 	input  wire SPI_SDI_button,
 	output wire SPI_SS);
 
@@ -81,6 +81,11 @@ module entropy_generator(
 	assign tx_byte = rng_out;
 
 	/* debugging output */
-	assign SPI_SDO_led1 = is_transmitting;
-	assign gpio8 = metastable;
+	assign SPI_SDO_led1_red = 0;
+	assign SPI_SCK_led2_green = is_transmitting;
+
+	assign gpio1 = out_received;		assign gpio2 = rng_valid;
+	assign gpio3 = SPI_SDI_button;		assign gpio4 = is_transmitting;
+	assign gpio5 = uart_txd;		assign gpio6 = uart_rxd;
+	assign gpio7 = clk;			assign gpio8 = metastable;
 endmodule

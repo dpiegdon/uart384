@@ -8,7 +8,7 @@ PCF=uart384.pcf
 # RNG seed for nextpnr-ice40. Try different values if you have not fully utilized the FPGAs logic but get placement issues.
 # Otherwise keep fixed to get a deterministic behavior.
 # You can also use `-r` to try random values. The used seed is listed in the first line of nextpnr's output.
-SEED=--seed=164357934
+SEED=--seed=862995722
 #SEED=-r
 # the size-constrained LP384 seems to work better with `sa' placing algorithm. some designs don't work with the standard placer `heap', or at least not very well.
 PLACER=--placer sa

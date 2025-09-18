@@ -25,7 +25,7 @@ set_io --warn-no-port gpio8    26
 
 # program-flash SPI with multiplexed functions.
 # use additional functions only when SPI_SS is HIGH.
-set_io --warn-no-port SPI_SDO_led1    12
-set_io --warn-no-port SPI_SDI_button  13
-set_io --warn-no-port SPI_SS          14
-set_io --warn-no-port SPI_SCK_led2    15
+set_io --warn-no-port SPI_SDO_led1_red   12
+set_io --warn-no-port SPI_SDI_button     13
+set_io --warn-no-port SPI_SS             14
+set_io --warn-no-port SPI_SCK_led2_green 15

@@ -40,8 +40,8 @@ module ring_noise(
 	output wire gpio7,
 	output wire gpio8,
 
-	output wire SPI_SDO_led1,
-	output wire SPI_SCK_led2,
+	output wire SPI_SDO_led1_red,
+	output wire SPI_SCK_led2_green,
 	input  wire SPI_SDI_button,
 	output wire SPI_SS);
 

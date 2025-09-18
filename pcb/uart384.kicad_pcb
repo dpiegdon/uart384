@@ -385,7 +385,7 @@
 				)
 			)
 		)
-		(property "Value" "1k"
+		(property "Value" "680"
 			(at 0 1.43 0)
 			(layer "F.Fab")
 			(uuid "3ffd29a1-5a07-4b63-9826-136db9e5399b")
@@ -4127,7 +4127,7 @@
 				)
 			)
 		)
-		(property "Value" "LED"
+		(property "Value" "LED_ORANGE"
 			(at 0 1.43 0)
 			(layer "F.Fab")
 			(uuid "175f941b-f53b-441a-8f56-d9a1c83de3eb")
@@ -5213,7 +5213,7 @@
 				)
 			)
 		)
-		(property "Value" "LED"
+		(property "Value" "LED2_GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "cc7cfca7-6c5c-4848-9e79-776c7445d406")
@@ -6239,7 +6239,7 @@
 				)
 			)
 		)
-		(property "Value" "LED"
+		(property "Value" "LED1_RED"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "cadf02a9-93ba-4515-9c0e-40b0a8819804")
