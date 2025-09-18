@@ -89,7 +89,7 @@ randomness_test:
 	# receive random data from device and do NIST SP800-90B entropy assessment tests.
 	# usefull for entropy-generator configuration.
 	# requires tools from NIST Entropy Assessment, see https://github.com/usnistgov/SP800-90B_EntropyAssessment
-	socat -u file:/dev/ttyACM0,b1000000,ignoreeof,cs8,raw,echo=0 STDOUT | dd bs=1000 count=1000 > random.raw
+	socat -u file:/dev/ttyUSB0,b1000000,ignoreeof,cs8,raw,echo=0 STDOUT | dd bs=1000 count=1000 > random.raw
 	ea_non_iid -i -a -v random.raw 8
 	ea_iid -i -a -v random.raw 8
 	ea_non_iid -c -a -v random.raw 8
@@ -98,7 +98,7 @@ randomness_test:
 source_randomness:
 	# usefull for entropy-generator configuration.
 	# receive random data from device and pipe it into the kernel entropy pool.
-	socat -u file:/dev/ttyACM0,b1000000,ignoreeof,cs8,raw,echo=0 STDOUT | sudo tee /dev/random | pv > /dev/null
+	socat -u file:/dev/ttyUSB0,b1000000,ignoreeof,cs8,raw,echo=0 STDOUT | sudo tee /dev/random | pv > /dev/null
 
 # specific projects:
 ENTROPY_GENERATOR_FILES = $(RESET_FILES) $(ENTROPY_FILES) $(UART_FILES) entropy_generator.v

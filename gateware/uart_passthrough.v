@@ -63,8 +63,8 @@ module uart_passthrough(
 	wire txd_timed_out = (txd_led_timeout == 0);
 	wire rxd_timed_out = (rxd_led_timeout == 0);
 
-	assign SPI_SDO_led1 = txd_timed_out;
-	assign SPI_SCK_led2 = rxd_timed_out;
+	assign SPI_SDO_led1 = !txd_timed_out;
+	assign SPI_SCK_led2 = !rxd_timed_out;
 
 	always @(negedge uart_txd, posedge clk_slow) begin
 		if(uart_txd == 0) begin
