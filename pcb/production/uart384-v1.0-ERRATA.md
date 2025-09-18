@@ -22,3 +22,12 @@ E.g.:
 - AT25DF256-SSHN
 - GD25QxxCTIG (for any number xx)
 
+#2: SPI SS pullup missing
+-------------------------
+
+[x] Fixed in main branch / v1.1~
+
+For some flash memory and some electrical circumstances the flash will need a pullup on the SS lines,
+otherwise programming of the first bytes of every page can fail, resulting in the FPGA refusing the stored the bitstream.
+
+Fix: add a 10K pull-up as can e.g. be seen in the ICEstick schematic.
