@@ -45,15 +45,15 @@ module variable_ringoscillator(
 	wire is_transmitting;
 	wire uart_received;
 	wire [7:0] uart_rxByte;
-	reg tx_now;
-	wire tx_word = tap + 8'h21;
-	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000)) uart(
+	reg tx_now = 1;
+	wire [7:0] tx_byte = tap + 8'h21;
+	uart #(.CLOCKFRQ(32000000), .BAUDRATE(500000)) uart(
 		.clk(clk),
-		.rst(0),
+		.rst(rst),
 		.rx(uart_txd),
 		.tx(uart_rxd),
 		.transmit(!is_transmitting & tx_now),
-		.tx_byte(0),
+		.tx_byte(tx_byte),
 		.received(uart_received),
 		.rx_byte(uart_rxByte),
 		.is_receiving(),
@@ -61,33 +61,33 @@ module variable_ringoscillator(
 		.recv_error()
 	);
 
-	wire tap_up   = uart_received && (uart_rxByte == 8'h5D);
-	wire tap_down = uart_received && (uart_rxByte == 8'h5B);
-	wire tap_rst  = uart_received && (uart_rxByte == 8'h72);
+	wire tap_up   = uart_received && (uart_rxByte == 8'h5D);	// ']'
+	wire tap_down = uart_received && (uart_rxByte == 8'h5B);	// '['
+	wire tap_rst  = uart_received && (uart_rxByte == 8'h72);	// 'r'
 	reg rst = 1;
 
 	always @(posedge clk) begin
 		if(tap_up) begin
-			rst = 1;
-			tap = tap+1;
-			tx_now = 1;
+			rst <= 1;
+			tap <= (tap == TAPS-1) ? 0 : tap+1;
+			tx_now <= 1;
 		end else if(tap_down) begin
-			rst = 1;
-			tap = tap-1;
-			tx_now = 1;
+			rst <= 1;
+			tap <= (tap == 0) ? TAPS-1 : tap-1;
+			tx_now <= 1;
 		end else if(tap_rst) begin
-			rst = 1;
-			tap = 0;
-			tx_now = 1;
+			rst <= 1;
+			tap <= 0;
+			tx_now <= 1;
 		end else begin
-			rst = 0;
-			tx_now = 0;
+			rst <= 0;
+			tx_now <= 0;
 		end
 	end
 
 	reg uart_counter = 0;
 	always @(posedge uart_received) begin
-		uart_counter = !uart_counter;
+		uart_counter <= !uart_counter;
 	end
 
 	assign SPI_SDO_led1_red = uart_counter;
