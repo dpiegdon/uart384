@@ -1,84 +1,64 @@
 #!/usr/bin/python3
 """ Script to talk to an SPI device via UART tunnel """
 
+import argparse
 import sys
 import time
-import serial
 
-class SpiDevice():
-    """ Encapsulation of SPI channel over UART """
-    def __init__(self, serialdevice:str,
-                 cpol:bool, cpha:bool, msb_first:bool=True, cs_active_low:bool=True, clkdiv=4,
-                 verbose=False):
-        self.verbose = verbose
-        self.dev = serial.Serial(sys.argv[1], 500000, timeout=.1, rtscts=False, dsrdtr=False)
-        self.configure(cpol, cpha, msb_first, cs_active_low, clkdiv)
-
-    def _rw1(self, outchar):
-        """ send a single char and return a single response char """
-        self.dev.write(outchar)
-        response = self.dev.read(1)
-        if self.verbose:
-            print(f"{outchar} -> {response}")
-        return response
-
-    def _await_ri(self, value):
-        """ await that RI line goes to @value """
-        while self.dev.ri != value:
-            time.sleep(0.001)
-
-    def _await_dcd(self, value):
-        """ await that DCD line goes to @value """
-        while self.dev.cd != value:
-            time.sleep(0.001)
-
-    def configure(self, cpol:bool, cpha:bool, msb_first:bool, cs_active_low:bool, clkdiv):
-        """ set SPI configuration """
-        cfg = (  int(cs_active_low)<<7
-               | int(cpol)<<6
-               | int(cpha)<<5
-               | int(msb_first)<<4
-               | (clkdiv & 0xf))
-        if self.verbose:
-            print("cfg")
-        self.dev.rts = False  # deassert CS, we're in configuration mode
-        self._await_dcd(False)
-        self._rw1(cfg.to_bytes())
-
-    def transceive(self, data:bytes):
-        """ do a full SPI transmit/receive cycle,
-        send @data and return received result """
-        if self.verbose:
-            print("xmit")
-        self.dev.rts = True  # assert CS
-        self._await_dcd(True)
-        result = b''
-        for w in data:
-            w = w.to_bytes()
-            self._await_ri(False)
-            r = self._rw1(w)
-            result += r
-        self.dev.rts = False  # deassert CS
-        return result
+from spi_device import SerialFlashDevice
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        raise ValueError("Please give serial device to read from.")
+    p = argparse.ArgumentParser("uart2spi",
+                                "Execute SPI commands via UART tunnel")
+    p.add_argument("device")
+    p.add_argument("-v", "--verbose", action="store_true",
+                   help="enable verbose mode, dump full SPI xfers")
+    p.add_argument("-i", "--ident", action="store_true",
+                   help="verbosely identify flash chip")
+    p.add_argument("-r", "--read", type=int, default=None,
+                   help="read this much from flash (starting at address 0)")
+    p.add_argument("-o", "--out", type=argparse.FileType('wb'), default='-',
+                   help="store read data to this file (default stdout)")
+    p.add_argument("-w", "--write", type=argparse.FileType('rb'), default=None,
+                   help="erase, then store this file to flash")
+    p.add_argument("-e", "--erase", action="store_true",
+                   help="erase flash")
+    p.add_argument("-s", "--status", action="store_true",
+                   help="read and print status register")
 
-    dev = SpiDevice(sys.argv[1], False, False, verbose=False)
+    args = p.parse_args()
 
-    # communicate with program flash on devboard:
+    dev = SerialFlashDevice(args.device, 500_000, verbose=args.verbose)
 
-    # release internal flash from deep power
-    print("RDI", dev.transceive(b'\xab'))
-    # read manufacturer ID/device id
-    print("RDID", dev.transceive(b'\x90' + b'\x00'*5))
-    # read identification string
-    print("REMS", dev.transceive(b'\x9f' + b'\x00'*3))
-    # read unique ID
-    print("RUID", dev.transceive(b'\x4b' + b'\x00'*4 + b'\x00'*(128//8)))
-    # write enable
-    #print("WREN", dev.transceive(b'\x06'))
-    # chip erase
-    #print("CE", dev.transceive(b'\x60'))
+    dev.release_from_deep_powerdown()
+    if args.ident:
+        print("REMS", dev.read_manufacturer_device_id())
+        print("RDID", dev.read_identification())
+        print("RUID", dev.read_unique_id())
+        print("SFDP", dev.read_serial_flash_discoverable_parameters(0, 128))
+
+    if args.read is not None:
+        args.out.write(dev.read_bytes(0, args.read))
+
+    if args.status:
+        print(dev.read_status_lo())
+        print(dev.read_status_hi())
+
+    if args.erase or args.write is not None:
+        dev.write_enable()
+        dev.chip_erase()
+        dev.await_write()
+
+        if args.write is not None:
+            data = args.write.read()
+            pages = ((i, data[i:i+256]) for i in range(0, len(data), 256))
+            for adr, page in pages:
+                print(f"0x{adr:x}")
+                dev.write_enable()
+                dev.page_program(adr, page)
+                dev.await_write()
+
+        dev.write_disable()
+
+    dev.deep_power_down()
