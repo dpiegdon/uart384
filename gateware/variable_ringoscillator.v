@@ -47,7 +47,7 @@ module variable_ringoscillator(
 	wire [7:0] uart_rxByte;
 	reg tx_now = 1;
 	wire [7:0] tx_byte = tap + 8'h21;
-	uart #(.CLOCKFRQ(32000000), .BAUDRATE(500000)) uart(
+	uart #(.CLOCKFRQ(32_000_000), .BAUDRATE(500_000)) uart(
 		.clk(clk),
 		.rst(rst),
 		.rx(uart_txd),

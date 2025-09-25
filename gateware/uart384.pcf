@@ -1,14 +1,14 @@
 # uart384 hardware
 
 # UART port
-set_io --warn-no-port uart_dtr 1
-set_io --warn-no-port uart_dsr 2
-set_io --warn-no-port uart_txd 5
-set_io --warn-no-port uart_rxd 6
-set_io --warn-no-port uart_rts 7
-set_io --warn-no-port uart_cts 8
-set_io --warn-no-port uart_ri  31
-set_io --warn-no-port uart_dcd 32
+set_io --warn-no-port uart_dtr 1		# change on PC-side not seen on FPGA-side?
+set_io --warn-no-port uart_dsr 2		# change on FPGA-side not seen on PC-side?
+set_io --warn-no-port uart_txd 5		# works
+set_io --warn-no-port uart_rxd 6		# works
+set_io --warn-no-port uart_rts 7		# works
+set_io --warn-no-port uart_cts 8		# works
+set_io --warn-no-port uart_ri  31		# works
+set_io --warn-no-port uart_dcd 32		# works
 
 # clock
 set_io --warn-no-port clk      19

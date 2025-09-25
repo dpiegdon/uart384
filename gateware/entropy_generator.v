@@ -61,7 +61,7 @@ module entropy_generator(
 	wire is_transmitting;
 	wire do_transmit;
 	wire [7:0] tx_byte;
-	uart #(.CLOCKFRQ(32000000), .BAUDRATE(1000000) ) uart(
+	uart #(.CLOCKFRQ(32_000_000), .BAUDRATE(1_000_000) ) uart(
 		.clk(clk),
 		.rst(0),
 		.rx(0),

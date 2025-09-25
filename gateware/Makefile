@@ -8,7 +8,7 @@ PCF=uart384.pcf
 # RNG seed for nextpnr-ice40. Try different values if you have not fully utilized the FPGAs logic but get placement issues.
 # Otherwise keep fixed to get a deterministic behavior.
 # You can also use `-r` to try random values. The used seed is listed in the first line of nextpnr's output.
-SEED=--seed=862995722
+SEED=--seed=893263542
 #SEED=-r
 # the size-constrained LP384 seems to work better with `sa' placing algorithm. some designs don't work with the standard placer `heap', or at least not very well.
 PLACER=--placer sa
@@ -39,10 +39,14 @@ RESET_FILES = \
 BUTTON_FILES = \
 	verilog-buildingblocks/lattice_ice40/debounced_button.v \
 	verilog-buildingblocks/lattice_ice40/pullup_input.v \
-	verilog-buildingblocks/lattice_ice40/tristate_output.v
+	verilog-buildingblocks/lattice_ice40/tristate_output.v \
+	verilog-buildingblocks/debouncer.v
 
 UART_FILES = \
 	verilog-buildingblocks/uart.v
+
+SPI_FILES = \
+	verilog-buildingblocks/simple_spi_master.v
 
 TOPLEVEL_FILES = \
 	entropy_generator.v \
@@ -127,6 +131,13 @@ VARIABLE_RINGOSCILLATOR_FILES = variable_ringoscillator.v $(ENTROPY_FILES) $(UAR
 variable_ringoscillator.json: $(VARIABLE_RINGOSCILLATOR_FILES)
 
 variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
+
+
+RELAY_SPI_FILES = relay_spi.v $(UART_FILES) $(SPI_FILES) $(PRESCALER_FILES)
+
+relay_spi.json: $(RELAY_SPI_FILES)
+
+relay_spi.dot: $(RELAY_SPI_FILES)
 
 
 # generic pattern rules
