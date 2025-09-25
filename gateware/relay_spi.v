@@ -81,7 +81,7 @@ module relay_spi(
 		.recv_error()
 	);
 
-	// SPI
+	// SPI configuration
 	wire spi_cs_active_low;
 	wire spi_cpol;
 	wire spi_cpha;
@@ -90,7 +90,7 @@ module relay_spi(
 	reg [7:0] spi_configuration_word = 8'b1_0_0_0_0100;
 	assign {spi_cs_active_low, spi_cpol, spi_cpha, spi_msb_first, spi_clk_div} = spi_configuration_word;
 
-	wire spi_xfer_enable;
+	// SPI
 	wire spi_xfer_idle;
 	reg spi_xfer_word_trigger = 0;
 	wire spi_xfer_word_completed;
@@ -102,7 +102,7 @@ module relay_spi(
 		.cpol(spi_cpol),
 		.cpha(spi_cpha),
 		.msb_first(spi_msb_first),
-		.xfer_enable(spi_xfer_enable),
+		.xfer_enable(tunnel_active),
 		.xfer_idle(spi_xfer_idle),
 		.xfer_word_trigger(spi_xfer_word_trigger),
 		.xfer_word_completed(spi_xfer_word_completed),
@@ -119,36 +119,29 @@ module relay_spi(
 		.spi_miso(gpio6),
 		.spi_mosi(gpio8));
 	assign gpio2 = spi_cs ^ spi_cs_active_low;
-	assign SPI_SCK_led2_green = tunnel_active;	// for debugging
 `endif
-	assign gpio1 = tunnel_active;			// for debugging
-	assign gpio3 = spi_xfer_idle;			// for debugging
 
 	// control/data plane selection:
 	wire tunnel_active     = uart_rts == 0;
 	wire tunnel_alert      = 0;
 	assign uart_dcd        = !tunnel_active;
 	assign uart_ri         = spi_xfer_idle;
-	assign spi_xfer_enable = tunnel_active;
 
 	assign uart_data_tx = tunnel_active ? spi_data_rx : spi_configuration_word;
 
-	always @(posedge clk) begin
+	always @(posedge slow_clk) begin
 		uart_tx_trigger <= 0;
 		spi_xfer_word_trigger <= 0;
-		if (uart_rx_completed) begin
-			if (tunnel_active) begin
-				if (spi_xfer_idle) begin
-					spi_xfer_word_trigger <= 1;
-				end
-			end else begin
-				spi_configuration_word <= uart_data_rx;
+		if (tunnel_active) begin
+			if (uart_rx_completed && spi_xfer_idle) begin
+				spi_xfer_word_trigger <= 1;
+			end
+			if (spi_xfer_word_completed) begin
 				uart_tx_trigger <= 1;
 			end
-		end
-
-		if (spi_xfer_word_completed) begin
-			if (tunnel_active) begin
+		end else begin
+			if (uart_rx_completed) begin
+				spi_configuration_word <= uart_data_rx;
 				uart_tx_trigger <= 1;
 			end
 		end
