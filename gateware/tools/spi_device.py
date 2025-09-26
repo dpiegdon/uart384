@@ -20,7 +20,7 @@ class SpiDevice():
         self.dev.write(outchar)
         response = self.dev.read(1)
         if self.verbose:
-            print(f"{outchar} -> {response}")
+            print(f"    _{outchar} -> {response}")
         return response
 
     def _await_ri(self, value):
@@ -41,7 +41,7 @@ class SpiDevice():
                | int(msb_first)<<4
                | (clkdiv & 0xf))
         if self.verbose:
-            print("cfg")
+            print("  _CFG")
         self.dev.rts = False  # deassert CS, we're in configuration mode
         self._await_dcd(False)
         self._rw1(cfg.to_bytes())
@@ -50,7 +50,7 @@ class SpiDevice():
         """ do a full SPI transmit/receive cycle,
         send @data and return received result """
         if self.verbose:
-            print("xmit")
+            print("  _XMIT")
         self.dev.rts = True  # assert CS
         self._await_dcd(True)
         result = b''
