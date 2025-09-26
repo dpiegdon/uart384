@@ -36,7 +36,8 @@ if __name__ == "__main__":
         print("REMS", dev.read_manufacturer_device_id())
         print("RDID", dev.read_identification())
         print("RUID", dev.read_unique_id())
-        print("SFDP", dev.read_serial_flash_discoverable_parameters(0, 128))
+        print("SFDP", dev.read_serial_flash_discoverable_parameters())
+        print("RSR ", dev.read_security_registers())
 
     if args.read is not None:
         args.out.write(dev.read_bytes(0, args.read))

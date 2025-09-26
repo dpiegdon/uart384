@@ -128,9 +128,13 @@ class SerialFlashDevice(SpiDevice):
         """ READ """
         return self.transceive(b'\x03' + self._to_adr(address) + b'\x00'*count)[4:]
 
-    def read_serial_flash_discoverable_parameters(self, address:int, count:int):
+    def read_serial_flash_discoverable_parameters(self, address:int=0, count:int=0x80):
         """ SFDP """
         return self.transceive(b'\x5a' + self._to_adr(address) + b'\x00'*count)[4:]
+
+    def read_security_registers(self, address:int=0, count:int=0x400):
+        """ RSR. only valid for 0x000..0x3ff? """
+        return self.transceive(b'\x48' + self._to_adr(address) + b'\x00'*count)[4:]
 
     def page_program(self, address:int, data):
         """ PP """
