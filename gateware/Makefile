@@ -49,6 +49,7 @@ SPI_FILES = \
 	verilog-buildingblocks/simple_spi_master.v
 
 TOPLEVEL_FILES = \
+	blink.v \
 	entropy_generator.v \
 	ring_noise.v \
 	uart_passthrough.v \
@@ -105,6 +106,13 @@ source_randomness:
 	socat -u file:/dev/ttyUSB0,b1000000,ignoreeof,cs8,raw,echo=0 STDOUT | sudo tee /dev/random | pv > /dev/null
 
 # specific projects:
+BLINK_FILES = $(PRESCALER_FILES) blink.v
+
+blink.json: $(BLINK_FILES)
+
+blink.dot: $(BLINK_FILES)
+
+
 ENTROPY_GENERATOR_FILES = $(RESET_FILES) $(ENTROPY_FILES) $(UART_FILES) entropy_generator.v
 
 entropy_generator.json: $(ENTROPY_GENERATOR_FILES)
