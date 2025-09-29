@@ -1,4 +1,4 @@
-# uart384 hardware
+# uart384 hardware v1.0
 
 # UART port
 set_io --warn-no-port uart_dtr 1		# change on PC-side not seen on FPGA-side?

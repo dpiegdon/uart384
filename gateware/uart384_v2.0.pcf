@@ -1,0 +1,31 @@
+# uart384 hardware v2.0
+
+# UART port
+set_io --warn-no-port uart_dtr 20
+set_io --warn-no-port uart_dsr 22
+set_io --warn-no-port uart_txd 23
+set_io --warn-no-port uart_rxd 26
+set_io --warn-no-port uart_rts 27
+set_io --warn-no-port uart_cts 29
+set_io --warn-no-port uart_ri  18
+set_io --warn-no-port uart_dcd 19
+
+# clock
+set_io --warn-no-port clk      30
+
+# GPIO port
+set_io --warn-no-port gpio1    8
+set_io --warn-no-port gpio2    7
+set_io --warn-no-port gpio3    6
+set_io --warn-no-port gpio4    5
+set_io --warn-no-port gpio5    2
+set_io --warn-no-port gpio6    1
+set_io --warn-no-port gpio7    31
+set_io --warn-no-port gpio8    32
+
+# program-flash SPI with multiplexed functions.
+# use additional functions only when SPI_SS is HIGH.
+set_io --warn-no-port SPI_SDO_led1_red   12
+set_io --warn-no-port SPI_SDI_button     13
+set_io --warn-no-port SPI_SS             14
+set_io --warn-no-port SPI_SCK_led2_green 15
