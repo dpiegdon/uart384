@@ -91,3 +91,12 @@ Variable delay ring oscillator
 
 Experiments with a ringoscillator with a reconfigurable delay-line.
 Delay can be changed at runtime via UART.
+
+License
+=======
+
+The hardware (Schematic, PCB) is licensed under CERN-OHL-W v2.
+See `cern_ohl_w_v2.txt`.
+
+The software is licensed under LGPL v2.0, unless specified otherwise
+in a subrepository. See `LGPLv2.0.txt`.

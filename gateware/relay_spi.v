@@ -1,3 +1,21 @@
+/*
+This file is part of the UART384 software & gateware
+(c) 2025 by David R. Piegdon <dgit@piegdon.de>
+
+The UART384 software & gateware is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The UART384 software & gateware is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the UART384 software & gateware. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 `default_nettype none
 
 /* Relay an SPI channel over UART.
@@ -15,7 +33,7 @@
  * In transer mode, the chipselect automatically is activated with RTS.
  * Each received byte is transmitted via SPI, each response byte
  * received is returned via UART. To release chipselect, release RTS.
- * 
+ *
  * RI is used to indicate that the SPI channel is currently idle
  * (i.e. more bytes may be sent via UART).
  * DCD is used to indicate that the channel was successfully activated
