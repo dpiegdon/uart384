@@ -67,7 +67,9 @@ module entropy_generator(
 	wire rng_valid;
 	wire out_received;
 	wire metastable;
-	randomized_spongent #(.SBOX_DOUBLETIME(1)) rng(
+	randomized_spongent   #(.SBOX_DOUBLETIME(1),
+				.NOISE_DOUBLETIME(1))
+			rng(
 				.clk(clk),
 				.rst(0),
 				.out(rng_out),
