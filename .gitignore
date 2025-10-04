@@ -16,6 +16,8 @@ pcb/*.kicad_pcb-bak
 pcb/*-backups
 pcb/#auto_saved_files#
 pcb/~*.lck
+pcb/*.glb
+pcb/*.stl
 pcb/fp-info-cache
 3d/*.FCBak
 3d/*.blend1
