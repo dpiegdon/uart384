@@ -7081,6 +7081,16 @@
 	)
 	(wire
 		(pts
+			(xy 219.71 156.21) (xy 219.71 163.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "00642389-e71c-4d39-9454-253e94f8f490")
+	)
+	(wire
+		(pts
 			(xy 38.1 252.73) (xy 38.1 250.19)
 		)
 		(stroke
@@ -7268,16 +7278,6 @@
 			(type default)
 		)
 		(uuid "153a9746-1a34-4679-8ed7-80c0a96cfa3a")
-	)
-	(wire
-		(pts
-			(xy 219.71 156.21) (xy 219.71 173.99)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "154035e1-d308-4db3-8abc-4827a3ba5a71")
 	)
 	(wire
 		(pts
@@ -8518,6 +8518,16 @@
 			(type default)
 		)
 		(uuid "98cc3957-e06a-4aa9-9b5b-967c01ffc9a7")
+	)
+	(wire
+		(pts
+			(xy 219.71 171.45) (xy 219.71 173.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9aff8e32-50d9-4f9e-a65a-342b90f2aa04")
 	)
 	(wire
 		(pts
@@ -11441,7 +11451,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0b2d19c7-53bb-46c0-bbf3-d580f485db35")
-		(property "Reference" "R8"
+		(property "Reference" "R9"
 			(at 231.14 166.3699 0)
 			(effects
 				(font
@@ -11495,7 +11505,7 @@
 		(instances
 			(project ""
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
-					(reference "R8")
+					(reference "R9")
 					(unit 1)
 				)
 			)
@@ -13388,7 +13398,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "3f031003-7958-47c3-93ca-fa9209d3a008")
-		(property "Reference" "R9"
+		(property "Reference" "R10"
 			(at 265.938 128.3716 0)
 			(effects
 				(font
@@ -13441,7 +13451,7 @@
 		(instances
 			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
-					(reference "R9")
+					(reference "R10")
 					(unit 1)
 				)
 			)
@@ -13584,6 +13594,76 @@
 			(project ""
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "D5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 219.71 167.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4c0f944b-9e0c-4953-8ebd-340995fa017c")
+		(property "Reference" "R8"
+			(at 222.25 166.3699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4k7"
+			(at 222.25 168.9099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 217.932 167.64 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 219.71 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 219.71 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "a5359e5d-c14b-4a96-9639-2e482ca1f40a")
+		)
+		(pin "1"
+			(uuid "847bcc2c-ea8b-47b7-943a-8dadbc398b16")
+		)
+		(instances
+			(project "uart384"
+				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
+					(reference "R8")
 					(unit 1)
 				)
 			)
