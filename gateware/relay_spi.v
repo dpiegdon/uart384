@@ -18,31 +18,86 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
 
 `default_nettype none
 
-/* Relay an SPI channel over UART.
- * Both configuration of the channel
- * (SPI CPOL, CPHA, CS active high/low, MSB first/last)
- * and transfers via the channel are fully encapsulated
- * in an UART line.
- * UART RTS is used to indicate:
- *  - HIGH: configuration mode
- *  - LOW:  transfer mode: set chipselect active, transfer mode
+/* UART-to-SPI/GPIO interfacing gateware.
  *
- * In configuration mode each received byte is interpreted
- * as configuration: {ACTIVE_LOW, CPOL, CPHA, MSB_FIRST, CLK_DIV[4]}
+ * This gateware provides a UART interface with:
+ * - configuration mode (RTS HIGH):
+ *   - for each pin GPIO1..8 and on-board SPI SS, SCK, SDI, SDO:
+ *     - select pin function
+ *   - for function SPI: SPI configuration of
+ *     - ACTIVE_LOW
+ *     - CPOL
+ *     - CPHA
+ *     - MSB_FIRST
+ *     - CLK_DIV (0..15; 0 maps to 2MHz SPI clock)
+ *   - for function GPIO output: set output value
+ *   - for function GPIO input: read back input value
+ * - SPI tunnel mode (RTS LOW):
+ *   - perform a single SPI transfer:
+ *     - CS is low exactly as long as RTS is low
+ *     - bytes received on UART are sent on SPI
+ *     - bytes received on SPI are returned on UART.
+ * 
+ * UART signal description:
+ * - RTS is used to switch between tunnel and configuration mode:
+ *   - HIGH: configuration mode
+ *   - LOW:  SPI tunnel transfer mode: set chipselect active, SPI transfer mode
+ * - RI is used to indicate that the SPI channel is currently idle
+ *   (i.e. more bytes may be sent via UART).
+ *   - HIGH: idle
+ *   - LOW:  busy
+ * - DCD is used to indicate that the channel was successfully activated
+ *   when RTS was set to LOW.
+ *   - HIGH: configuration mode active
+ *   - LOW:  tunnel mode active
  *
- * In transer mode, the chipselect automatically is activated with RTS.
- * Each received byte is transmitted via SPI, each response byte
- * received is returned via UART. To release chipselect, release RTS.
+ * Configuration mode:
+ * UART commands ALWAYS are two-byte register interface messages:
+ * - 1st byte is always the register # to addres
+ *   (high nibble is ignored: {4'xxxx, 4'address})
+ * - 2nd byte is the byte to write to the specified register (for write-registers),
+ *   or ignored (for read-registers)
+ * The 1st byte is responded with at-sign '@'.
+ * The 2nd byte is responded with register-specific data.
+ * The following registers exist:
+ * - REGI_ADDR_VERSION
+ *   - readable
+ *   - responds with register interface version `REGI_VERSION`.
+ * - REGI_ADDR_MUX_PAD_y_x
+ *   - for y,x in [ (2,1), (4,3), (6,5), (8,7), (A,9), (C,B)
+ *   - writeable
+ *   - selects function for pads y and x,
+ *     y is high nibble, x is low nibble ({4'func_y, 4'func_x})
+ *   - responds with register#
+ * - REGI_ADDR_GPIO_WRITE_A
+ *   - writeable
+ *   - sets the GPIO-A output values ({8'gpoi-a})
+ * - REGI_ADDR_GPIO_WRITE_B
+ *   - writeable
+ *   - sets the GPIO-B output values (only lower nibble: {4'xxxx, 4'gpoi-a})
+ * - REGI_ADDR_GPIO_READ_A
+ *   - readable
+ *   - responds with GPIO-A input values ({8'gpio-a})
+ * - REGI_ADDR_GPIO_READ_B
+ *   - readable
+ *   - responds with GPIO-B input values (only lower nibble: {4'0000, 4'gpio-b})
+ * - REGI_ADDR_SPI_CTRL
+ *   - writeable
+ *   - sets the SPI configuration word
+ *     ({1'spi_cs_active_low, 1'spi_cpol, 1'spi_cpha, 1'spi_msb_first, 4'spi_clk_div})
+ * - REGI_ADDR_RECOVER (or any invalid register#)
+ *   - readable
+ *   - responds with '?' to allow resynchronization
+ * To recover from potential sync loss you can
+ * - either send at least two bytes with 4'xF as lower nibble
+ *   (e.g. '??') until the last received byte is '?'.
+ * - or shortly enter tunnel mode and leave it again. (via RTS)
+ * Then the next byte sent will be a * register address.
  *
- * RI is used to indicate that the SPI channel is currently idle
- * (i.e. more bytes may be sent via UART).
- * DCD is used to indicate that the channel was successfully activated
- * when RTS was set to LOW.
- *
- * See the accompanying python script for a simple implementation
- * of the UART side to talk to the onboard program flash.
+ * SPI tunnel mode:
+ * As described above, SPI CS is active while tunnel mode is on,
+ * bytes are interchanged between SPI and UART.
  */
-`define CONNECT_TO_ONBOARD_FLASH
 module relay_spi(
 	output wire uart_rxd,
 	input  wire uart_txd,
@@ -55,19 +110,22 @@ module relay_spi(
 
 	input  wire clk,
 
-	output wire gpio1,
-	output wire gpio2,
-	output wire gpio3,
-	output wire gpio4,
-	output wire gpio5,
-	output wire gpio6,
-	output wire gpio7,
-	output wire gpio8,
+	inout  wire gpio1,
+	inout  wire gpio2,
+	inout  wire gpio3,
+	inout  wire gpio4,
+	inout  wire gpio5,
+	inout  wire gpio6,
+	inout  wire gpio7,
+	inout  wire gpio8,
 
-	output wire SPI_SDO_led1_red,
-	output wire SPI_SCK_led2_green,
-	input  wire SPI_SDI_button,
-	output wire SPI_SS);
+	inout  wire SPI_SDO_led1_red,
+	inout  wire SPI_SCK_led2_green,
+	inout  wire SPI_SDI_button,
+	inout  wire SPI_SS);
+
+	parameter ENABLE_INTERNAL_PINS = 1;	// set to 1 to allow use of internal SPI pins (including GPIO-B)
+						// or to 0 to use LEDs for debugging
 
 	localparam CLOCK_PSC_WIDTH = 4;
 	localparam SPI_CLK_DIV_WIDTH = 4;
@@ -82,8 +140,8 @@ module relay_spi(
 	wire uart_is_receiving;
 	wire uart_is_transmitting;
 	wire uart_rx_completed;
-	wire [7:0] uart_data_tx;
 	wire [7:0] uart_data_rx;
+	reg [7:0] uart_data_tx = 0;
 	reg uart_tx_trigger = 0;
 	uart #(.CLOCKFRQ(SLOW_FREQ), .BAUDRATE(500_000)) uart(
 		.clk(slow_clk),
@@ -127,17 +185,62 @@ module relay_spi(
 		.data_tx(uart_data_rx),
 		.data_rx(spi_data_rx),
 		.spi_cs(spi_cs),
-`ifdef CONNECT_TO_ONBOARD_FLASH
-		.spi_clk(SPI_SCK_led2_green),
-		.spi_miso(SPI_SDI_button),
-		.spi_mosi(SPI_SDO_led1_red));
-	assign SPI_SS = spi_cs ^ spi_cs_active_low;
-`else
-		.spi_clk(gpio4),
-		.spi_miso(gpio6),
-		.spi_mosi(gpio8));
-	assign gpio2 = spi_cs ^ spi_cs_active_low;
-`endif
+		.spi_clk(func_spi_sck),
+		.spi_miso(func_spi_sdi),
+		.spi_mosi(func_spi_sdo));
+	assign func_spi_ss = spi_cs ^ spi_cs_active_low;
+
+	// IO pads
+	localparam PAD_MUX_FUNC_IN_GPIO_RECEIVE   = 0;
+	localparam PAD_MUX_FUNC_IN_SPI_SDI        = 1;
+	localparam PAD_MUX_FUNC_OUT_SPI_SDO       = 2;
+	localparam PAD_MUX_FUNC_OUT_SPI_SCK       = 3;
+	localparam PAD_MUX_FUNC_OUT_SPI_SS        = 4;
+	localparam PAD_MUX_FUNC_OUT_GPIO_TRANSMIT = 5;
+
+	reg [3:0] pad1func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad2func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad3func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad4func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad5func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad6func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad7func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad8func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] pad9func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] padAfunc = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] padBfunc = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
+	reg [3:0] padCfunc = PAD_MUX_FUNC_OUT_GPIO_TRANSMIT;  // start with CS high to deselect SPI chip until really needed
+
+	wire [11:0] mux_func_spi_sdi;
+
+	wire [11:0] func_gpio_receive;
+	wire        func_spi_sdi = |mux_func_spi_sdi;
+	wire        func_spi_sdo;
+	wire        func_spi_sck;
+	wire        func_spi_ss;
+	reg  [11:0] func_gpio_transmit = 12'b1000_0000_0000;  // start with CS high to deselect SPI chip until really needed
+
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad1(gpio1,              pad1func, {mux_func_spi_sdi[ 0], func_gpio_receive[ 0]}, {func_gpio_transmit[ 0], func_spi_ss, func_spi_sck, func_spi_sdo});
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad2(gpio2,              pad2func, {mux_func_spi_sdi[ 1], func_gpio_receive[ 1]}, {func_gpio_transmit[ 1], func_spi_ss, func_spi_sck, func_spi_sdo});
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad3(gpio3,              pad3func, {mux_func_spi_sdi[ 2], func_gpio_receive[ 2]}, {func_gpio_transmit[ 2], func_spi_ss, func_spi_sck, func_spi_sdo});
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad4(gpio4,              pad4func, {mux_func_spi_sdi[ 3], func_gpio_receive[ 3]}, {func_gpio_transmit[ 3], func_spi_ss, func_spi_sck, func_spi_sdo});
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad5(gpio5,              pad5func, {mux_func_spi_sdi[ 4], func_gpio_receive[ 4]}, {func_gpio_transmit[ 4], func_spi_ss, func_spi_sck, func_spi_sdo});
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad6(gpio6,              pad6func, {mux_func_spi_sdi[ 5], func_gpio_receive[ 5]}, {func_gpio_transmit[ 5], func_spi_ss, func_spi_sck, func_spi_sdo});
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad7(gpio7,              pad7func, {mux_func_spi_sdi[ 6], func_gpio_receive[ 6]}, {func_gpio_transmit[ 6], func_spi_ss, func_spi_sck, func_spi_sdo});
+	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad8(gpio8,              pad8func, {mux_func_spi_sdi[ 7], func_gpio_receive[ 7]}, {func_gpio_transmit[ 7], func_spi_ss, func_spi_sck, func_spi_sdo});
+	generate
+		if (ENABLE_INTERNAL_PINS) begin : provide_internal_pins
+			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad9(SPI_SDI_button,     pad9func, {mux_func_spi_sdi[ 8], func_gpio_receive[ 8]}, {func_gpio_transmit[ 8], func_spi_ss, func_spi_sck, func_spi_sdo});
+			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) padA(SPI_SDO_led1_red,   padAfunc, {mux_func_spi_sdi[ 9], func_gpio_receive[ 9]}, {func_gpio_transmit[ 9], func_spi_ss, func_spi_sck, func_spi_sdo});
+			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) padB(SPI_SCK_led2_green, padBfunc, {mux_func_spi_sdi[10], func_gpio_receive[10]}, {func_gpio_transmit[10], func_spi_ss, func_spi_sck, func_spi_sdo});
+			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) padC(SPI_SS,             padCfunc, {mux_func_spi_sdi[11], func_gpio_receive[11]}, {func_gpio_transmit[11], func_spi_ss, func_spi_sck, func_spi_sdo});
+		end else begin : no_internal_pins
+			// use LEDs for debugging output
+			assign SPI_SS = 1;
+			assign SPI_SDO_led1_red = tunnel_active;
+			assign SPI_SCK_led2_green = (regi_state == 0);
+		end
+	endgenerate
 
 	// control/data plane selection:
 	wire tunnel_active     = uart_rts == 0;
@@ -145,7 +248,23 @@ module relay_spi(
 	assign uart_dcd        = !tunnel_active;
 	assign uart_ri         = spi_xfer_idle;
 
-	assign uart_data_tx = tunnel_active ? spi_data_rx : spi_configuration_word;
+	// register&tunnel statemachine
+	localparam REGI_VERSION           = 1;	// register interface version
+	localparam REGI_ADDR_ADDRESS      = 'h0;
+	localparam REGI_ADDR_VERSION      = 'h1;
+	localparam REGI_ADDR_MUX_PAD_2_1  = 'h2;
+	localparam REGI_ADDR_MUX_PAD_4_3  = 'h3;
+	localparam REGI_ADDR_MUX_PAD_6_5  = 'h4;
+	localparam REGI_ADDR_MUX_PAD_8_7  = 'h5;
+	localparam REGI_ADDR_MUX_PAD_A_9  = 'h6;
+	localparam REGI_ADDR_MUX_PAD_C_B  = 'h7;
+	localparam REGI_ADDR_GPIO_WRITE_A = 'h8;
+	localparam REGI_ADDR_GPIO_WRITE_B = 'h9;
+	localparam REGI_ADDR_GPIO_READ_A  = 'hA;
+	localparam REGI_ADDR_GPIO_READ_B  = 'hB;
+	localparam REGI_ADDR_SPI_CTRL     = 'hC;
+	localparam REGI_ADDR_RECOVER      = 'hF;
+	reg [3:0] regi_state = 0;
 
 	always @(posedge slow_clk) begin
 		uart_tx_trigger <= 0;
@@ -155,14 +274,71 @@ module relay_spi(
 				spi_xfer_word_trigger <= 1;
 			end
 			if (spi_xfer_word_completed) begin
+				uart_data_tx = spi_data_rx;
 				uart_tx_trigger <= 1;
 			end
+			regi_state <= REGI_ADDR_ADDRESS;
 		end else begin
 			if (uart_rx_completed) begin
-				spi_configuration_word <= uart_data_rx;
-				uart_tx_trigger <= 1;
+				if (regi_state == REGI_ADDR_ADDRESS) begin
+					regi_state <= uart_data_rx[3:0];
+					uart_data_tx <= 8'h40;  // '@' sign
+					uart_tx_trigger <= 1;
+				end else begin
+					regi_state <= REGI_ADDR_ADDRESS;
+					case (regi_state)
+						REGI_ADDR_VERSION: begin
+							uart_data_tx <= REGI_VERSION;
+						end
+						REGI_ADDR_MUX_PAD_2_1: begin
+							{pad2func, pad1func} <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_MUX_PAD_4_3: begin
+							{pad4func, pad3func} <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_MUX_PAD_6_5: begin
+							{pad6func, pad5func} <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_MUX_PAD_8_7: begin
+							{pad8func, pad7func} <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_MUX_PAD_A_9: begin
+							{padAfunc, pad9func} <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_MUX_PAD_C_B: begin
+							{padCfunc, padBfunc} <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_GPIO_WRITE_A: begin
+							func_gpio_transmit[7:0] <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_GPIO_WRITE_B: begin
+							func_gpio_transmit[11:8] <= uart_data_rx[3:0];
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						REGI_ADDR_GPIO_READ_A: begin
+							uart_data_tx <= func_gpio_receive[7:0];
+						end
+						REGI_ADDR_GPIO_READ_B: begin
+							uart_data_tx <= {4'h4, func_gpio_receive[11:8]};
+						end
+						REGI_ADDR_SPI_CTRL: begin
+							spi_configuration_word <= uart_data_rx;
+							uart_data_tx <= {4'h4, regi_state};
+						end
+						default: begin
+							uart_data_tx <= 8'h3f;  // '?' sign
+						end
+					endcase
+					uart_tx_trigger <= 1;
+				end
 			end
 		end
 	end
-
 endmodule
