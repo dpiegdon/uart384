@@ -64,11 +64,13 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
  *   - readable
  *   - responds with register interface version `REGI_VERSION`.
  * - REGI_ADDR_MUX_PAD_y_x
- *   - for y,x in [ (2,1), (4,3), (6,5), (8,7), (A,9), (C,B)
+ *   - for y,x in [ (A2,A1), (A4,A3), (A6,A5), (A8,A7), (B2,B1), (B4,B3)
  *   - writeable
  *   - selects function for pads y and x,
  *     y is high nibble, x is low nibble ({4'func_y, 4'func_x})
  *   - responds with register#
+ *   - NOTE: for available functions (pad-specific!)
+ *           see io_pad_ice40 padA1..padA8 and padB1..padB4
  * - REGI_ADDR_GPIO_WRITE_A
  *   - writeable
  *   - sets the GPIO-A output values ({8'gpoi-a})
@@ -123,9 +125,6 @@ module relay_spi(
 	inout  wire SPI_SCK_led2_green,
 	inout  wire SPI_SDI_button,
 	inout  wire SPI_SS);
-
-	parameter ENABLE_INTERNAL_PINS = 1;	// set to 1 to allow use of internal SPI pins (including GPIO-B)
-						// or to 0 to use LEDs for debugging
 
 	localparam CLOCK_PSC_WIDTH = 4;
 	localparam SPI_CLK_DIV_WIDTH = 4;
@@ -191,56 +190,27 @@ module relay_spi(
 	assign func_spi_ss = spi_cs ^ spi_cs_active_low;
 
 	// IO pads
-	localparam PAD_MUX_FUNC_IN_GPIO_RECEIVE   = 0;
-	localparam PAD_MUX_FUNC_IN_SPI_SDI        = 1;
-	localparam PAD_MUX_FUNC_OUT_SPI_SDO       = 2;
-	localparam PAD_MUX_FUNC_OUT_SPI_SCK       = 3;
-	localparam PAD_MUX_FUNC_OUT_SPI_SS        = 4;
-	localparam PAD_MUX_FUNC_OUT_GPIO_TRANSMIT = 5;
+	reg [3:0] padA1func = 0;
+	reg [3:0] padA2func = 0;
+	reg [3:0] padA3func = 0;
+	reg [3:0] padA4func = 0;
+	reg [3:0] padA5func = 0;
+	reg [3:0] padA6func = 0;
+	reg [3:0] padA7func = 0;
+	reg [3:0] padA8func = 0;
+	reg [3:0] padB1func = 0;  // start as GPIO input so button-press cannot create a short.
+	reg [3:0] padB2func = 3;  // start red LED as tunnel-active indicator.
+	reg [3:0] padB3func = 3;  // start green LED as SPI-xfer-idle indicator.
+	reg [3:0] padB4func = 3;  // start SS pulled high so we can't interfere with onboard flash.
 
-	reg [3:0] pad1func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad2func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad3func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad4func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad5func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad6func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad7func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad8func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] pad9func = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] padAfunc = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] padBfunc = PAD_MUX_FUNC_IN_GPIO_RECEIVE;
-	reg [3:0] padCfunc = PAD_MUX_FUNC_OUT_GPIO_TRANSMIT;  // start with CS high to deselect SPI chip until really needed
-
-	wire [11:0] mux_func_spi_sdi;
+	wire [8:0] mux_func_spi_sdi;
 
 	wire [11:0] func_gpio_receive;
 	wire        func_spi_sdi = |mux_func_spi_sdi;
 	wire        func_spi_sdo;
 	wire        func_spi_sck;
 	wire        func_spi_ss;
-	reg  [11:0] func_gpio_transmit = 12'b1000_0000_0000;  // start with CS high to deselect SPI chip until really needed
-
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad1(gpio1,              pad1func, {mux_func_spi_sdi[ 0], func_gpio_receive[ 0]}, {func_gpio_transmit[ 0], func_spi_ss, func_spi_sck, func_spi_sdo});
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad2(gpio2,              pad2func, {mux_func_spi_sdi[ 1], func_gpio_receive[ 1]}, {func_gpio_transmit[ 1], func_spi_ss, func_spi_sck, func_spi_sdo});
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad3(gpio3,              pad3func, {mux_func_spi_sdi[ 2], func_gpio_receive[ 2]}, {func_gpio_transmit[ 2], func_spi_ss, func_spi_sck, func_spi_sdo});
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad4(gpio4,              pad4func, {mux_func_spi_sdi[ 3], func_gpio_receive[ 3]}, {func_gpio_transmit[ 3], func_spi_ss, func_spi_sck, func_spi_sdo});
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad5(gpio5,              pad5func, {mux_func_spi_sdi[ 4], func_gpio_receive[ 4]}, {func_gpio_transmit[ 4], func_spi_ss, func_spi_sck, func_spi_sdo});
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad6(gpio6,              pad6func, {mux_func_spi_sdi[ 5], func_gpio_receive[ 5]}, {func_gpio_transmit[ 5], func_spi_ss, func_spi_sck, func_spi_sdo});
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad7(gpio7,              pad7func, {mux_func_spi_sdi[ 6], func_gpio_receive[ 6]}, {func_gpio_transmit[ 6], func_spi_ss, func_spi_sck, func_spi_sdo});
-	io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad8(gpio8,              pad8func, {mux_func_spi_sdi[ 7], func_gpio_receive[ 7]}, {func_gpio_transmit[ 7], func_spi_ss, func_spi_sck, func_spi_sdo});
-	generate
-		if (ENABLE_INTERNAL_PINS) begin : provide_internal_pins
-			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) pad9(SPI_SDI_button,     pad9func, {mux_func_spi_sdi[ 8], func_gpio_receive[ 8]}, {func_gpio_transmit[ 8], func_spi_ss, func_spi_sck, func_spi_sdo});
-			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) padA(SPI_SDO_led1_red,   padAfunc, {mux_func_spi_sdi[ 9], func_gpio_receive[ 9]}, {func_gpio_transmit[ 9], func_spi_ss, func_spi_sck, func_spi_sdo});
-			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) padB(SPI_SCK_led2_green, padBfunc, {mux_func_spi_sdi[10], func_gpio_receive[10]}, {func_gpio_transmit[10], func_spi_ss, func_spi_sck, func_spi_sdo});
-			io_pad_ice40 #(.RXCOUNT(2), .TXCOUNT(4)) padC(SPI_SS,             padCfunc, {mux_func_spi_sdi[11], func_gpio_receive[11]}, {func_gpio_transmit[11], func_spi_ss, func_spi_sck, func_spi_sdo});
-		end else begin : no_internal_pins
-			// use LEDs for debugging output
-			assign SPI_SS = 1;
-			assign SPI_SDO_led1_red = tunnel_active;
-			assign SPI_SCK_led2_green = (regi_state == 0);
-		end
-	endgenerate
+	reg  [11:0] func_gpio_transmit = 0;  // start with CS high to deselect SPI chip until really needed
 
 	// control/data plane selection:
 	wire tunnel_active     = uart_rts == 0;
@@ -248,23 +218,42 @@ module relay_spi(
 	assign uart_dcd        = !tunnel_active;
 	assign uart_ri         = spi_xfer_idle;
 
+	/* IO pad declarations and their selectable functions.
+	 * Functions index is COUNTED FROM THE RIGHT TO THE LEFT.
+	 * To select a function, write the corresponding
+	 * index fron the right (0-indexed) into the function register.
+	 * NON-EXISTING FUNCTIONS DON'T COUNT.
+	 *                                             /---- IO pin ----\  /func.reg\  /----------------------- output functions -----------------------\  /------------- input functions -------------\  */
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA1(gpio1,               padA1func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 0]}, {mux_func_spi_sdi[ 0], func_gpio_receive[ 0]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA2(gpio2,               padA2func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 1]}, {mux_func_spi_sdi[ 1], func_gpio_receive[ 1]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA3(gpio3,               padA3func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 2]}, {mux_func_spi_sdi[ 2], func_gpio_receive[ 2]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA4(gpio4,               padA4func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 3]}, {mux_func_spi_sdi[ 3], func_gpio_receive[ 3]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA5(gpio5,               padA5func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 4]}, {mux_func_spi_sdi[ 4], func_gpio_receive[ 4]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA6(gpio6,               padA6func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 5]}, {mux_func_spi_sdi[ 5], func_gpio_receive[ 5]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA7(gpio7,               padA7func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 6]}, {mux_func_spi_sdi[ 6], func_gpio_receive[ 6]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA8(gpio8,               padA8func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 7]}, {mux_func_spi_sdi[ 7], func_gpio_receive[ 7]});
+	io_pad_ice40 #(.TXCOUNT(2), .RXCOUNT(2)) padB1(SPI_SDI_button,      padB1func,                                           {func_gpio_transmit[ 8]}, {mux_func_spi_sdi[ 8], func_gpio_receive[ 8]});
+	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB2(SPI_SDO_led1_red,    padB2func,              {tunnel_active, func_spi_sdo, func_gpio_transmit[ 9]},                       {func_gpio_receive[ 9]});
+	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB3(SPI_SCK_led2_green,  padB3func,              {spi_xfer_idle, func_spi_sck, func_gpio_transmit[10]},                       {func_gpio_receive[10]});
+	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB4(SPI_SS,              padB4func,              {            1,  func_spi_ss, func_gpio_transmit[11]},                       {func_gpio_receive[11]});
+
 	// register&tunnel statemachine
-	localparam REGI_VERSION           = 1;	// register interface version
-	localparam REGI_ADDR_ADDRESS      = 'h0;
-	localparam REGI_ADDR_VERSION      = 'h1;
-	localparam REGI_ADDR_MUX_PAD_2_1  = 'h2;
-	localparam REGI_ADDR_MUX_PAD_4_3  = 'h3;
-	localparam REGI_ADDR_MUX_PAD_6_5  = 'h4;
-	localparam REGI_ADDR_MUX_PAD_8_7  = 'h5;
-	localparam REGI_ADDR_MUX_PAD_A_9  = 'h6;
-	localparam REGI_ADDR_MUX_PAD_C_B  = 'h7;
-	localparam REGI_ADDR_GPIO_WRITE_A = 'h8;
-	localparam REGI_ADDR_GPIO_WRITE_B = 'h9;
-	localparam REGI_ADDR_GPIO_READ_A  = 'hA;
-	localparam REGI_ADDR_GPIO_READ_B  = 'hB;
-	localparam REGI_ADDR_SPI_CTRL     = 'hC;
-	localparam REGI_ADDR_RECOVER      = 'hF;
-	reg [3:0] regi_state = 0;
+	localparam REGI_VERSION            = 1;	// register interface version
+	localparam REGI_ADDR_ADDRESS       = 'h0;
+	localparam REGI_ADDR_VERSION       = 'h1;
+	localparam REGI_ADDR_MUX_PAD_A2_A1 = 'h2;
+	localparam REGI_ADDR_MUX_PAD_A4_A3 = 'h3;
+	localparam REGI_ADDR_MUX_PAD_A6_A5 = 'h4;
+	localparam REGI_ADDR_MUX_PAD_A8_A7 = 'h5;
+	localparam REGI_ADDR_MUX_PAD_B2_B1 = 'h6;
+	localparam REGI_ADDR_MUX_PAD_B4_B3 = 'h7;
+	localparam REGI_ADDR_GPIO_WRITE_A  = 'h8;
+	localparam REGI_ADDR_GPIO_WRITE_B  = 'h9;
+	localparam REGI_ADDR_GPIO_READ_A   = 'hA;
+	localparam REGI_ADDR_GPIO_READ_B   = 'hB;
+	localparam REGI_ADDR_SPI_CTRL      = 'hC;
+	localparam REGI_ADDR_RECOVER       = 'hF;
+	reg [3:0] regi_state = REGI_ADDR_ADDRESS;
 
 	always @(posedge slow_clk) begin
 		uart_tx_trigger <= 0;
@@ -290,28 +279,28 @@ module relay_spi(
 						REGI_ADDR_VERSION: begin
 							uart_data_tx <= REGI_VERSION;
 						end
-						REGI_ADDR_MUX_PAD_2_1: begin
-							{pad2func, pad1func} <= uart_data_rx;
+						REGI_ADDR_MUX_PAD_A2_A1: begin
+							{padA2func, padA1func} <= uart_data_rx;
 							uart_data_tx <= {4'h4, regi_state};
 						end
-						REGI_ADDR_MUX_PAD_4_3: begin
-							{pad4func, pad3func} <= uart_data_rx;
+						REGI_ADDR_MUX_PAD_A4_A3: begin
+							{padA4func, padA3func} <= uart_data_rx;
 							uart_data_tx <= {4'h4, regi_state};
 						end
-						REGI_ADDR_MUX_PAD_6_5: begin
-							{pad6func, pad5func} <= uart_data_rx;
+						REGI_ADDR_MUX_PAD_A6_A5: begin
+							{padA6func, padA5func} <= uart_data_rx;
 							uart_data_tx <= {4'h4, regi_state};
 						end
-						REGI_ADDR_MUX_PAD_8_7: begin
-							{pad8func, pad7func} <= uart_data_rx;
+						REGI_ADDR_MUX_PAD_A8_A7: begin
+							{padA8func, padA7func} <= uart_data_rx;
 							uart_data_tx <= {4'h4, regi_state};
 						end
-						REGI_ADDR_MUX_PAD_A_9: begin
-							{padAfunc, pad9func} <= uart_data_rx;
+						REGI_ADDR_MUX_PAD_B2_B1: begin
+							{padB2func, padB1func} <= uart_data_rx;
 							uart_data_tx <= {4'h4, regi_state};
 						end
-						REGI_ADDR_MUX_PAD_C_B: begin
-							{padCfunc, padBfunc} <= uart_data_rx;
+						REGI_ADDR_MUX_PAD_B4_B3: begin
+							{padB4func, padB3func} <= uart_data_rx;
 							uart_data_tx <= {4'h4, regi_state};
 						end
 						REGI_ADDR_GPIO_WRITE_A: begin
