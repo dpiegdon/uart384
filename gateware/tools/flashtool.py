@@ -20,7 +20,7 @@
 
 import argparse
 
-from spi_device import SerialFlashDevice
+from spi_device import SpiFlashDevice
 
 
 if __name__ == "__main__":
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     if args.erase and args.dont_erase:
         p.error("cannot erase and not erase")
 
-    dev = SerialFlashDevice(args.device, 500_000, verbose=args.verbose)
+    dev = SpiFlashDevice(args.device, 500_000, verbose=args.verbose)
 
     dev.release_from_deep_powerdown()
     if args.ident:

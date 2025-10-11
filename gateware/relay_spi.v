@@ -279,6 +279,8 @@ module relay_spi(
 						REGI_ADDR_MUX_PAD_B4_B3: uart_data_tx <= {1'h1, padB4func, 1'h1, padB3func};
 						REGI_ADDR_GPIO_READ_A:   uart_data_tx <= func_gpio_receive[7:0];
 						REGI_ADDR_GPIO_READ_B:   uart_data_tx <= {4'h4, func_gpio_receive[11:8]};
+						//REGI_ADDR_GPIO_WRITE_A:  uart_data_tx <= func_gpio_transmit[7:0];
+						//REGI_ADDR_GPIO_WRITE_B:  uart_data_tx <= {4'h4, func_gpio_transmit[11:8]};
 						REGI_ADDR_SPI_CTRL:      uart_data_tx <= spi_configuration_word;
 						REGI_ADDR_VERSION:       uart_data_tx <= REGI_VERSION;
 						default:                 uart_data_tx <= 8'hff;
