@@ -8,8 +8,8 @@ PCF=uart384_v1.0.pcf
 # RNG seed for nextpnr-ice40. Try different values if you have not fully utilized the FPGAs logic but get placement issues.
 # Otherwise keep fixed to get a deterministic behavior.
 # You can also use `-r` to try random values. The used seed is listed in the first line of nextpnr's output.
-SEED=--seed=1841691956
-#SEED=-r
+#SEED=--seed=1841691956
+SEED=-r
 # the size-constrained LP384 seems to work better with `sa' placing algorithm. some designs don't work with the standard placer `heap', or at least not very well.
 PLACER=--placer sa
 
@@ -48,12 +48,17 @@ UART_FILES = \
 SPI_FILES = \
 	verilog-buildingblocks/simple_spi_master.v
 
+IOPAD_FILES = \
+	verilog-buildingblocks/lattice_ice40/io_pad_ice40.v \
+	verilog-buildingblocks/io_mux.v
+
 TOPLEVEL_FILES = \
 	blink.v \
 	entropy_generator.v \
 	ring_noise.v \
 	uart_passthrough.v \
-	variable_ringoscillator.v
+	variable_ringoscillator.v \
+	relay_spi.v
 
 # generic targets:
 all: $(subst .v,.rpt,$(TOPLEVEL_FILES))
@@ -141,7 +146,7 @@ variable_ringoscillator.json: $(VARIABLE_RINGOSCILLATOR_FILES)
 variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
 
 
-RELAY_SPI_FILES = relay_spi.v $(UART_FILES) $(SPI_FILES) $(PRESCALER_FILES)
+RELAY_SPI_FILES = relay_spi.v $(IOPAD_FILES) $(UART_FILES) $(SPI_FILES) $(PRESCALER_FILES)
 
 relay_spi.json: $(RELAY_SPI_FILES)
 
