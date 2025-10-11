@@ -18,13 +18,92 @@
 
 """ Script to talk to an SPI device via UART tunnel """
 
+import enum
 import time
-import serial
 import struct
 
+import serial
 
-class SpiDevice():
-    """ Encapsulation of SPI channel over UART """
+
+class Register(enum.Enum):
+    """Registers that can be addressed"""
+    VERSION       = 0x1
+    MUX_PAD_A2_A1 = 0x2
+    MUX_PAD_A4_A3 = 0x3
+    MUX_PAD_A6_A5 = 0x4
+    MUX_PAD_A8_A7 = 0x5
+    MUX_PAD_B2_B1 = 0x6
+    MUX_PAD_B4_B3 = 0x7
+    GPIO_WRITE_A  = 0x8
+    GPIO_WRITE_B  = 0x9
+    GPIO_READ_A   = 0xA
+    GPIO_READ_B   = 0xB
+    SPI_CTRL      = 0xC
+    RECOVER       = 0xF
+
+
+class Pad(enum.Enum):
+    """List of all available IO Pads"""
+    A1 = 1
+    A2 = 2
+    A3 = 3
+    A4 = 4
+    A5 = 5
+    A6 = 6
+    A7 = 7
+    A8 = 8
+    B1 = 9
+    B2 = 10
+    B3 = 11
+    B4 = 12
+
+
+class PadFunc(enum.Enum):
+    """List of all existing functions any pad can be muxed to"""
+    GPIO_IN       = 0
+    GPIO_OUT      = 1
+    SPI_SS        = 2
+    SPI_SCK       = 3
+    SPI_SDO       = 4
+    SPI_SDI       = 5
+    TUNNEL_ACTIVE = 6
+    SPI_XFER_IDLE = 7
+    HIGH          = 8
+
+
+PadFunctions = {
+        Pad.A1: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS),
+        Pad.A2: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS)
+        Pad.A3: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS)
+        Pad.A4: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS)
+        Pad.A5: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS)
+        Pad.A6: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS)
+        Pad.A7: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS)
+        Pad.A8: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.SPI_SCK, PadFunc.SPI_SS)
+        Pad.B1: (PadFunc.GPIO_IN, PadFunc.SPI_SDI,
+                 PadFunc.GPIO_OUT)
+        Pad.B2: (PadFunc.GPIO_IN,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SDO, PadFunc.TUNNEL_ACTIVE)
+        Pad.B3: (PadFunc.GPIO_IN,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SCK, PadFunc.SPI_XFER_IDLE)
+        Pad.B4: (PadFunc.GPIO_IN,
+                 PadFunc.GPIO_OUT, PadFunc.SPI_SS,  PadFunc.HIGH)
+        }
+
+
+SPI_FUNCTIONS = (PadFunc.SPI_SS, PadFunc.SPI_SCK, PadFunc.SPI_SDO, PadFunc.SPI_SDI)
+
+
+class IoRelayDevice():
+    """Encapsulation of an UART384 with the IO relay gateware "relay_spi"."""
     def __init__(self, serialdevice:str, baudrate:int,
                  cpol:bool, cpha:bool, msb_first:bool=True, cs_active_low:bool=True, clkdiv=4,
                  verbose:bool=False):
@@ -33,7 +112,7 @@ class SpiDevice():
         self.configure(cpol, cpha, msb_first, cs_active_low, clkdiv)
 
     def _rw1(self, outchar):
-        """ send a single char and return a single response char """
+        """Send a single char and return a single response char."""
         self.dev.write(outchar)
         response = self.dev.read(1)
         if self.verbose:
@@ -41,14 +120,37 @@ class SpiDevice():
         return response
 
     def _await_ri(self, value):
-        """ await that RI line goes to @value """
+        """Await that RI line goes to @value."""
         while self.dev.ri != value:
             time.sleep(0.001)
 
     def _await_dcd(self, value):
-        """ await that DCD line goes to @value """
+        """Await that DCD line goes to @value."""
         while self.dev.cd != value:
             time.sleep(0.001)
+
+    def tunnel(self, enable: bool):
+        """Enter or leave tunnel mode"""
+        self.dev.rts = enable
+        self._await_dcd(enable)
+
+    def rw_register(self, register: Register, value: int):
+        """Set @register to @value,
+        returns register return value."""
+        self.tunnel(False)
+        a = self._rw1(register.to_bytes())
+        assert a == b'@'
+        b = self._rw1(value.to_bytes())
+        return b
+
+    def mux_pad(self, pad: Pad, function: PadFunc):
+        """Change @pad function to @function.
+        Raises if pad doesn't exist of function is unavailable for that pad."""
+        idx = PadFunctions[pad].index(function)
+        #b = self.rw_register(pad, 
+
+
+
 
     def configure(self, cpol:bool, cpha:bool, msb_first:bool, cs_active_low:bool, clkdiv):
         """ set SPI configuration """
@@ -61,6 +163,7 @@ class SpiDevice():
             print("  _CFG")
         self.dev.rts = False  # deassert CS, we're in configuration mode
         self._await_dcd(False)
+        self._rw1(Register.SPI_CTRL)
         self._rw1(cfg.to_bytes())
 
     def transceive(self, data:bytes):
@@ -68,19 +171,18 @@ class SpiDevice():
         send @data and return received result """
         if self.verbose:
             print("  _XMIT")
-        self.dev.rts = True  # assert CS
-        self._await_dcd(True)
+        self.tunnel(True)
         result = b''
         for w in data:
             w = w.to_bytes()
             self._await_ri(False)
             r = self._rw1(w)
             result += r
-        self.dev.rts = False  # deassert CS
+        self.tunnel(False)
         return result
 
 
-class SerialFlashDevice(SpiDevice):
+class SpiFlashDevice(IoRelayDevice):
     """ Encapsulation of common commands of SPI serial flash chips """
     def __init__(self, serialdevice:str, baudrate:int, verbose:bool=False):
         super().__init__(serialdevice=serialdevice, baudrate=baudrate,

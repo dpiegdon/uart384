@@ -41,7 +41,7 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
  * UART signal description:
  * - RTS is used to switch between tunnel and configuration mode:
  *   - HIGH: configuration mode
- *   - LOW:  SPI tunnel transfer mode: set chipselect active, SPI transfer mode
+ *   - LOW:  SPI tunnel transfer mode: set chipselect active
  * - RI is used to indicate that the SPI channel is currently idle
  *   (i.e. more bytes may be sent via UART).
  *   - HIGH: idle
@@ -52,53 +52,60 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
  *   - LOW:  tunnel mode active
  *
  * Configuration mode:
- * UART commands ALWAYS are two-byte register interface messages:
- * - 1st byte is always the register # to addres
- *   (high nibble is ignored: {4'xxxx, 4'address})
+ * UART commands are two-byte register interface messages:
+ * - 1st byte is the register # to addres
+ *   - high nibble is ignored: {4'xxxx, 4'address}
+ *   - address 0 is the addressing register itself, so this truncates the
+ *     UART command and expects another address as the next byte
+ *   - a response is sent, depending on the register addressed:
+ *     - MUX registers already respond with their current value, to allow
+ *       read-mask-set operations
+ *     - otherwise 8'hff is returned
+ *
  * - 2nd byte is the byte to write to the specified register (for write-registers),
- *   or ignored (for read-registers)
- * The 1st byte is responded with at-sign '@'.
- * The 2nd byte is responded with register-specific data.
+ *   or a dummy byte that will be ignored (for read-registers)
+ *   - a response is sent, depending on the register addressed.
+ *
  * The following registers exist:
- * - REGI_ADDR_VERSION
- *   - readable
- *   - responds with register interface version `REGI_VERSION`.
  * - REGI_ADDR_MUX_PAD_y_x
  *   - for y,x in [ (A2,A1), (A4,A3), (A6,A5), (A8,A7), (B2,B1), (B4,B3)
  *   - writeable
- *   - selects function for pads y and x,
- *     y is high nibble, x is low nibble ({4'func_y, 4'func_x})
- *   - responds with register#
+ *   - selects function for pads n and m,
+ *     n is high nibble, m is low nibble ({1'x, 3'func_n, 1'x, 4'func_m})
+ *   - responds to address-byte with current value
+ *   - responds to value-byte with 8'h00
  *   - NOTE: for available functions (pad-specific!)
  *           see io_pad_ice40 padA1..padA8 and padB1..padB4
  * - REGI_ADDR_GPIO_WRITE_A
  *   - writeable
  *   - sets the GPIO-A output values ({8'gpoi-a})
+ *   - responds to value-byte with 8'h00
  * - REGI_ADDR_GPIO_WRITE_B
  *   - writeable
  *   - sets the GPIO-B output values (only lower nibble: {4'xxxx, 4'gpoi-a})
+ *   - responds to value-byte with 8'h00
  * - REGI_ADDR_GPIO_READ_A
  *   - readable
- *   - responds with GPIO-A input values ({8'gpio-a})
+ *   - responds to dummy-byte with GPIO-A input values ({8'gpio-a})
  * - REGI_ADDR_GPIO_READ_B
  *   - readable
- *   - responds with GPIO-B input values (only lower nibble: {4'0000, 4'gpio-b})
+ *   - responds to dummy-byte with GPIO-B input values (only lower nibble: {4'xxxx, 4'gpio-b})
  * - REGI_ADDR_SPI_CTRL
  *   - writeable
  *   - sets the SPI configuration word
  *     ({1'spi_cs_active_low, 1'spi_cpol, 1'spi_cpha, 1'spi_msb_first, 4'spi_clk_div})
- * - REGI_ADDR_RECOVER (or any invalid register#)
+ * - REGI_ADDR_VERSION
  *   - readable
- *   - responds with '?' to allow resynchronization
+ *   - responds to dummy-byte with register interface version `REGI_VERSION`.
  * To recover from potential sync loss you can
- * - either send at least two bytes with 4'xF as lower nibble
- *   (e.g. '??') until the last received byte is '?'.
+ * - either send a byte with 4'x0 as lower nibble (e.g. '@')
  * - or shortly enter tunnel mode and leave it again. (via RTS)
- * Then the next byte sent will be a * register address.
+ * Then the next byte received will always be interpreted as register address.
  *
  * SPI tunnel mode:
  * As described above, SPI CS is active while tunnel mode is on,
  * bytes are interchanged between SPI and UART.
+ * Tunnel mode is enabled iff. RTS iw low.
  */
 module relay_spi(
 	output wire uart_rxd,
@@ -190,18 +197,18 @@ module relay_spi(
 	assign func_spi_ss = spi_cs ^ spi_cs_active_low;
 
 	// IO pads
-	reg [3:0] padA1func = 0;
-	reg [3:0] padA2func = 0;
-	reg [3:0] padA3func = 0;
-	reg [3:0] padA4func = 0;
-	reg [3:0] padA5func = 0;
-	reg [3:0] padA6func = 0;
-	reg [3:0] padA7func = 0;
-	reg [3:0] padA8func = 0;
-	reg [3:0] padB1func = 0;  // start as GPIO input so button-press cannot create a short.
-	reg [3:0] padB2func = 3;  // start red LED as tunnel-active indicator.
-	reg [3:0] padB3func = 3;  // start green LED as SPI-xfer-idle indicator.
-	reg [3:0] padB4func = 3;  // start SS pulled high so we can't interfere with onboard flash.
+	reg [2:0] padA1func = 0;
+	reg [2:0] padA2func = 0;
+	reg [2:0] padA3func = 0;
+	reg [2:0] padA4func = 0;
+	reg [2:0] padA5func = 0;
+	reg [2:0] padA6func = 0;
+	reg [2:0] padA7func = 0;
+	reg [2:0] padA8func = 0;
+	reg [2:0] padB1func = 0;  // start as GPIO input so button-press cannot create a short.
+	reg [2:0] padB2func = 3;  // start red LED as tunnel-active indicator.
+	reg [2:0] padB3func = 3;  // start green LED as SPI-xfer-idle indicator.
+	reg [2:0] padB4func = 3;  // start SS pulled high so we can't interfere with onboard flash.
 
 	wire [8:0] mux_func_spi_sdi;
 
@@ -210,7 +217,7 @@ module relay_spi(
 	wire        func_spi_sdo;
 	wire        func_spi_sck;
 	wire        func_spi_ss;
-	reg  [11:0] func_gpio_transmit = 0;  // start with CS high to deselect SPI chip until really needed
+	reg  [11:0] func_gpio_transmit = 0;
 
 	// control/data plane selection:
 	wire tunnel_active     = uart_rts == 0;
@@ -232,27 +239,26 @@ module relay_spi(
 	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA6(gpio6,               padA6func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 5]}, {mux_func_spi_sdi[ 5], func_gpio_receive[ 5]});
 	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA7(gpio7,               padA7func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 6]}, {mux_func_spi_sdi[ 6], func_gpio_receive[ 6]});
 	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA8(gpio8,               padA8func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 7]}, {mux_func_spi_sdi[ 7], func_gpio_receive[ 7]});
-	io_pad_ice40 #(.TXCOUNT(2), .RXCOUNT(2)) padB1(SPI_SDI_button,      padB1func,                                           {func_gpio_transmit[ 8]}, {mux_func_spi_sdi[ 8], func_gpio_receive[ 8]});
+	io_pad_ice40 #(.TXCOUNT(1), .RXCOUNT(2)) padB1(SPI_SDI_button,      padB1func,                                           {func_gpio_transmit[ 8]}, {mux_func_spi_sdi[ 8], func_gpio_receive[ 8]});
 	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB2(SPI_SDO_led1_red,    padB2func,              {tunnel_active, func_spi_sdo, func_gpio_transmit[ 9]},                       {func_gpio_receive[ 9]});
 	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB3(SPI_SCK_led2_green,  padB3func,              {spi_xfer_idle, func_spi_sck, func_gpio_transmit[10]},                       {func_gpio_receive[10]});
 	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB4(SPI_SS,              padB4func,              {            1,  func_spi_ss, func_gpio_transmit[11]},                       {func_gpio_receive[11]});
 
 	// register&tunnel statemachine
-	localparam REGI_VERSION            = 1;	// register interface version
+	localparam REGI_VERSION            = 2;	// register interface version
 	localparam REGI_ADDR_ADDRESS       = 'h0;
-	localparam REGI_ADDR_VERSION       = 'h1;
-	localparam REGI_ADDR_MUX_PAD_A2_A1 = 'h2;
-	localparam REGI_ADDR_MUX_PAD_A4_A3 = 'h3;
-	localparam REGI_ADDR_MUX_PAD_A6_A5 = 'h4;
-	localparam REGI_ADDR_MUX_PAD_A8_A7 = 'h5;
-	localparam REGI_ADDR_MUX_PAD_B2_B1 = 'h6;
-	localparam REGI_ADDR_MUX_PAD_B4_B3 = 'h7;
+	localparam REGI_ADDR_MUX_PAD_A2_A1 = 'h1;
+	localparam REGI_ADDR_MUX_PAD_A4_A3 = 'h2;
+	localparam REGI_ADDR_MUX_PAD_A6_A5 = 'h3;
+	localparam REGI_ADDR_MUX_PAD_A8_A7 = 'h4;
+	localparam REGI_ADDR_MUX_PAD_B2_B1 = 'h5;
+	localparam REGI_ADDR_MUX_PAD_B4_B3 = 'h6;
 	localparam REGI_ADDR_GPIO_WRITE_A  = 'h8;
 	localparam REGI_ADDR_GPIO_WRITE_B  = 'h9;
 	localparam REGI_ADDR_GPIO_READ_A   = 'hA;
 	localparam REGI_ADDR_GPIO_READ_B   = 'hB;
 	localparam REGI_ADDR_SPI_CTRL      = 'hC;
-	localparam REGI_ADDR_RECOVER       = 'hF;
+	localparam REGI_ADDR_VERSION       = 'hF;
 	reg [3:0] regi_state = REGI_ADDR_ADDRESS;
 
 	always @(posedge slow_clk) begin
@@ -269,47 +275,54 @@ module relay_spi(
 			regi_state <= REGI_ADDR_ADDRESS;
 		end else begin
 			if (uart_rx_completed) begin
+				uart_tx_trigger <= 1;
 				if (regi_state == REGI_ADDR_ADDRESS) begin
+					case (uart_data_rx[3:0])
+						/* MUX registers contain two pads, so a read+mask+set procedure is strictly
+						 * required to not interfere with a pad that should not be altered.
+						 * This allows readback: */
+						REGI_ADDR_MUX_PAD_A2_A1: uart_data_tx <= {1'h1, padA2func, 1'h1, padA1func};
+						REGI_ADDR_MUX_PAD_A4_A3: uart_data_tx <= {1'h1, padA4func, 1'h1, padA3func};
+						REGI_ADDR_MUX_PAD_A6_A5: uart_data_tx <= {1'h1, padA6func, 1'h1, padA5func};
+						REGI_ADDR_MUX_PAD_A8_A7: uart_data_tx <= {1'h1, padA8func, 1'h1, padA7func};
+						REGI_ADDR_MUX_PAD_B2_B1: uart_data_tx <= {1'h1, padB2func, 1'h1, padB1func};
+						REGI_ADDR_MUX_PAD_B4_B3: uart_data_tx <= {1'h1, padB4func, 1'h1, padB3func};
+						default:                 uart_data_tx <= 8'hff;
+					endcase
 					regi_state <= uart_data_rx[3:0];
-					uart_data_tx <= 8'h40;  // '@' sign
-					uart_tx_trigger <= 1;
 				end else begin
-					regi_state <= REGI_ADDR_ADDRESS;
 					case (regi_state)
-						REGI_ADDR_VERSION: begin
-							uart_data_tx <= REGI_VERSION;
-						end
 						REGI_ADDR_MUX_PAD_A2_A1: begin
-							{padA2func, padA1func} <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							{padA2func, padA1func} <= {uart_data_rx[6:4], uart_data_rx[2:0]};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_MUX_PAD_A4_A3: begin
-							{padA4func, padA3func} <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							{padA4func, padA3func} <= {uart_data_rx[6:4], uart_data_rx[2:0]};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_MUX_PAD_A6_A5: begin
-							{padA6func, padA5func} <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							{padA6func, padA5func} <= {uart_data_rx[6:4], uart_data_rx[2:0]};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_MUX_PAD_A8_A7: begin
-							{padA8func, padA7func} <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							{padA8func, padA7func} <= {uart_data_rx[6:4], uart_data_rx[2:0]};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_MUX_PAD_B2_B1: begin
-							{padB2func, padB1func} <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							{padB2func, padB1func} <= {uart_data_rx[6:4], uart_data_rx[2:0]};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_MUX_PAD_B4_B3: begin
-							{padB4func, padB3func} <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							{padB4func, padB3func} <= {uart_data_rx[6:4], uart_data_rx[2:0]};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_GPIO_WRITE_A: begin
 							func_gpio_transmit[7:0] <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_GPIO_WRITE_B: begin
 							func_gpio_transmit[11:8] <= uart_data_rx[3:0];
-							uart_data_tx <= {4'h4, regi_state};
+							uart_data_tx <= 0;
 						end
 						REGI_ADDR_GPIO_READ_A: begin
 							uart_data_tx <= func_gpio_receive[7:0];
@@ -317,15 +330,18 @@ module relay_spi(
 						REGI_ADDR_GPIO_READ_B: begin
 							uart_data_tx <= {4'h4, func_gpio_receive[11:8]};
 						end
+						REGI_ADDR_VERSION: begin
+							uart_data_tx <= REGI_VERSION;
+						end
 						REGI_ADDR_SPI_CTRL: begin
 							spi_configuration_word <= uart_data_rx;
-							uart_data_tx <= {4'h4, regi_state};
+							uart_data_tx <= 0;
 						end
 						default: begin
-							uart_data_tx <= 8'h3f;  // '?' sign
+							uart_data_tx <= 8'hff;
 						end
 					endcase
-					uart_tx_trigger <= 1;
+					regi_state <= REGI_ADDR_ADDRESS;
 				end
 			end
 		end
