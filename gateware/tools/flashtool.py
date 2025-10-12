@@ -60,6 +60,9 @@ if __name__ == "__main__":
     p.add_argument("-s", "--status",
                    action="store_true",
                    help="read and print status register")
+    p.add_argument("-t", "--tc2050",
+                   action="store_true",
+                   help="target the TC2050 port J3 instead of the internal flash")
 
     args = p.parse_args()
     none_selected = (    not args.ident and not args.read
@@ -70,7 +73,10 @@ if __name__ == "__main__":
     if args.erase and args.dont_erase:
         p.error("cannot erase and not erase")
 
-    dev = SpiFlashDevice(args.device, 500_000, verbose=args.verbose)
+    dev = SpiFlashDevice(serialdevice=args.device,
+                         baudrate=500_000,
+                         internal=not args.tc2050,
+                         verbose=args.verbose)
 
     dev.release_from_deep_powerdown()
     if args.ident:

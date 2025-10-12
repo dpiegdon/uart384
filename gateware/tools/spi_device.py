@@ -185,6 +185,7 @@ class IoRelayDevice():
         for pad in padfuncs:
             self.mux_pad(pad, padfuncs[pad])
 
+    # all A pads muxed to input
     MUX_SETTINGS_A_IN =   {Pad.A1: PadFunc.GPIO_IN,
                            Pad.A2: PadFunc.GPIO_IN,
                            Pad.A3: PadFunc.GPIO_IN,
@@ -193,7 +194,21 @@ class IoRelayDevice():
                            Pad.A6: PadFunc.GPIO_IN,
                            Pad.A7: PadFunc.GPIO_IN,
                            Pad.A8: PadFunc.GPIO_IN}
+
+    # configuration for programming another board via J1 (TC2050)
+    MUX_SETTINGS_A_PROG = {Pad.A1: PadFunc.SPI_SDO,
+                           Pad.A2: PadFunc.GPIO_IN,   # CDONE
+                           Pad.A3: PadFunc.GPIO_OUT,  # CRESET
+                           Pad.A4: PadFunc.GPIO_IN,   # AUX_B
+                           Pad.A5: PadFunc.GPIO_IN,   # AUX_A
+                           Pad.A6: PadFunc.SPI_SCK,
+                           Pad.A7: PadFunc.SPI_SS,
+                           Pad.A8: PadFunc.SPI_SDI}
+
+    # all A pads muxed to a safe state
     MUX_SETTINGS_A_SAFE = MUX_SETTINGS_A_IN
+
+    # all A pads muxed to output
     MUX_SETTINGS_A_OUT =  {Pad.A1: PadFunc.GPIO_OUT,
                            Pad.A2: PadFunc.GPIO_OUT,
                            Pad.A3: PadFunc.GPIO_OUT,
@@ -202,18 +217,26 @@ class IoRelayDevice():
                            Pad.A6: PadFunc.GPIO_OUT,
                            Pad.A7: PadFunc.GPIO_OUT,
                            Pad.A8: PadFunc.GPIO_OUT}
+
+    # all B pads muxed to input
     MUX_SETTINGS_B_IN =   {Pad.B1: PadFunc.GPIO_IN,
                            Pad.B2: PadFunc.GPIO_IN,
                            Pad.B3: PadFunc.GPIO_IN,
                            Pad.B4: PadFunc.GPIO_IN}
+
+    # all B pads muxed to a safe state
     MUX_SETTINGS_B_SAFE = {Pad.B1: PadFunc.GPIO_IN,
                            Pad.B2: PadFunc.TUNNEL_ACTIVE,
                            Pad.B3: PadFunc.SPI_XFER_IDLE,
                            Pad.B4: PadFunc.HIGH}
+
+    # configuration for programming the internal flash
     MUX_SETTINGS_B_SPI =  {Pad.B1: PadFunc.SPI_SDI,
                            Pad.B2: PadFunc.SPI_SDO,
                            Pad.B3: PadFunc.SPI_SCK,
                            Pad.B4: PadFunc.SPI_SS}
+
+    # all B pads muxed to output
     MUX_SETTINGS_B_GPIO = {Pad.B1: PadFunc.GPIO_IN,
                            Pad.B2: PadFunc.GPIO_OUT,
                            Pad.B3: PadFunc.GPIO_OUT,
@@ -227,9 +250,30 @@ class IoRelayDevice():
         self.mux_pads(self.MUX_SETTINGS_B_SAFE)
 
     def mux_spi_internal(self):
-        """Mux for internal SPI on port A, and inputs on port A"""
+        """Mux for internal SPI on port B, and inputs on port A"""
         self.mux_pads(self.MUX_SETTINGS_A_SAFE)
         self.mux_pads(self.MUX_SETTINGS_B_SPI)
+
+    def mux_spi_external(self):
+        """Mux for external SPI on port A,
+        trigger CRESET,
+        and safe state on port B"""
+        self.mux_pads(self.MUX_SETTINGS_A_PROG)
+        self.mux_pads(self.MUX_SETTINGS_B_SAFE)
+
+    def gpo_set(self, a_values:int, b_values:int):
+        """Set general purpose output values for port A and B.
+        Either may be None to not set them."""
+        if a_values is not None:
+            self.register_write(Register.GPIO_WRITE_A, a_values)
+        if b_values is not None:
+            self.register_write(Register.GPIO_WRITE_B, b_values)
+
+    def gpi_get(self):
+        """Return general purpose input values for port A and B
+        as tuple (a:int, b:int) """
+        return (self.register_read(Register.GPIO_READ_A),
+                self.register_read(Register.GPIO_READ_B))
 
     def spi_configure(self, cpol:bool, cpha:bool, msb_first:bool, cs_active_low:bool, clkdiv:int):
         """ set SPI configuration """
@@ -260,11 +304,15 @@ class IoRelayDevice():
 
 class SpiFlashDevice(IoRelayDevice):
     """ Encapsulation of common commands of SPI serial flash chips """
-    def __init__(self, serialdevice:str, baudrate:int, verbose:bool=False):
+    def __init__(self, serialdevice:str, baudrate:int, internal:bool=True, verbose:bool=False):
         super().__init__(serialdevice=serialdevice, baudrate=baudrate, verbose=verbose)
         self.spi_configure(cpol=True, cpha=True, msb_first=True,
                            cs_active_low=True, clkdiv=4)
-        self.mux_spi_internal()
+        if internal:
+            self.mux_spi_internal()
+        else:
+            self.mux_spi_external()
+            self.gpo_set(0b00000000, None)  # pull down CRESET to trigger device reset
 
     _FUNCS = {# name             short cmdcode suffix-len  ret-start ret-len
               "read_status_lo": ("RDSRl",0x05, 1,          1,        1),
