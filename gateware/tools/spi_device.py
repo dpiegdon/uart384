@@ -56,6 +56,21 @@ class Pad(enum.Enum):
     B3 = 11
     B4 = 12
 
+    @property
+    def bank_A(self):
+        return self is in (A1, A2, A3, A4, A5, A6, A7, A8)
+
+    @property
+    def bank_B(self):
+        return self is in (B1, B2, B3, B4)
+
+    @property
+    def pin_number(self):
+        if self.bank_A:
+            return self.value
+        elif self.bank_B:
+            return self.value - B1.value + 1
+
 
 class PadFunc(enum.Enum):
     """List of all existing functions any pad can be muxed to"""
