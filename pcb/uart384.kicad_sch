@@ -7328,6 +7328,26 @@
 	)
 	(wire
 		(pts
+			(xy 254 189.23) (xy 251.46 189.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0d630097-b61a-4781-9885-89c90de5206f")
+	)
+	(wire
+		(pts
+			(xy 251.46 166.37) (xy 266.7 166.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0eee41a2-01dd-4fbe-92ca-eaaefa297b3f")
+	)
+	(wire
+		(pts
 			(xy 285.75 123.19) (xy 285.75 128.27)
 		)
 		(stroke
@@ -7588,6 +7608,16 @@
 	)
 	(wire
 		(pts
+			(xy 251.46 168.91) (xy 266.7 168.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "26d3e8aa-3b99-4134-b114-07d176057b00")
+	)
+	(wire
+		(pts
 			(xy 293.37 40.64) (xy 293.37 34.29)
 		)
 		(stroke
@@ -7725,16 +7755,6 @@
 			(type default)
 		)
 		(uuid "38d452a9-2fd2-43c6-9446-9c3b38e0af07")
-	)
-	(wire
-		(pts
-			(xy 266.7 166.37) (xy 256.54 166.37)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3d792b28-6d0a-4248-abef-c4232c8f2e4a")
 	)
 	(wire
 		(pts
@@ -8215,6 +8235,16 @@
 			(type default)
 		)
 		(uuid "6fd2f352-d782-402e-b851-d33ff9278e1e")
+	)
+	(wire
+		(pts
+			(xy 254 186.69) (xy 251.46 186.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "70186011-7eaa-4281-bb0d-2f6ac9b80cbf")
 	)
 	(polyline
 		(pts
@@ -8725,16 +8755,6 @@
 			(type default)
 		)
 		(uuid "a373d95a-1ff1-440a-a33b-1e86826c8762")
-	)
-	(wire
-		(pts
-			(xy 266.7 168.91) (xy 256.54 168.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a5cc870b-3a86-4ab2-b43f-172f88db03e3")
 	)
 	(wire
 		(pts
@@ -10057,7 +10077,7 @@
 		(uuid "7b5e7ca6-95b3-4850-964d-a80b88663e94")
 	)
 	(label "GPIO6"
-		(at 256.54 166.37 0)
+		(at 254 166.37 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10127,7 +10147,7 @@
 		(uuid "92931dc1-f5ee-42ec-a965-906c94cf5f12")
 	)
 	(label "GPIO5"
-		(at 256.54 168.91 0)
+		(at 254 168.91 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11494,6 +11514,70 @@
 			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "TP3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 251.46 168.91 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "097e043d-6e18-4c40-a078-a18276b47877")
+		(property "Reference" "TP5"
+			(at 245.11 168.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 237.49 168.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm"
+			(at 251.46 163.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 251.46 163.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 251.46 168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "97fd5c6f-471b-429e-96dc-784ac8c192ac")
+		)
+		(instances
+			(project "uart384"
+				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
+					(reference "TP5")
 					(unit 1)
 				)
 			)
@@ -14866,6 +14950,70 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 251.46 186.69 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "70f6dc31-c01c-41a4-b96c-fe66f24deff2")
+		(property "Reference" "TP7"
+			(at 245.11 186.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 237.49 186.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm"
+			(at 251.46 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 251.46 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 251.46 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "341508d0-1aed-4f15-83ed-54fda3d5ea58")
+		)
+		(instances
+			(project "uart384"
+				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
+					(reference "TP7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:D")
 		(at 154.94 45.72 270)
 		(unit 1)
@@ -16633,6 +16781,137 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 251.46 189.23 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bd8da0dd-e73a-4778-bc09-2e2dc41c5851")
+		(property "Reference" "TP8"
+			(at 245.11 189.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 237.49 189.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm"
+			(at 251.46 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 251.46 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 251.46 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1263023a-e88e-4241-93c4-4479b0ef8225")
+		)
+		(instances
+			(project "uart384"
+				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
+					(reference "TP8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 254 189.23 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c1f50864-d05f-463e-8dcd-72b85c101cb4")
+		(property "Reference" "#PWR058"
+			(at 260.35 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 257.81 189.2299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 254 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 254 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ac1670e2-b878-482a-b75c-c78452c1f816")
+		)
+		(instances
+			(project "uart384"
+				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
+					(reference "#PWR058")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 58.42 204.47 0)
 		(unit 1)
@@ -17451,6 +17730,73 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 254 186.69 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e84b7b4a-beab-4e3a-a28c-ffc7115cc412")
+		(property "Reference" "#PWR057"
+			(at 260.35 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 257.81 186.6899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 254 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 254 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f0acc3e0-dd66-44f4-bfc7-59b44ec44cce")
+		)
+		(instances
+			(project "uart384"
+				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
+					(reference "#PWR057")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 251.46 184.15 90)
 		(unit 1)
@@ -17576,6 +17922,70 @@
 			(project "uart384"
 				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
 					(reference "#PWR054")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 251.46 166.37 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f4171cde-1588-4d97-9e7e-e18c722ca11c")
+		(property "Reference" "TP6"
+			(at 245.11 166.37 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 237.49 166.37 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm"
+			(at 251.46 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 251.46 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 251.46 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d6d30579-902f-4666-9a2c-6b90830300e7")
+		)
+		(instances
+			(project "uart384"
+				(path "/951aeac3-6c61-42a5-aa61-f58713889333"
+					(reference "TP6")
 					(unit 1)
 				)
 			)
