@@ -57,19 +57,24 @@ class Pad(enum.Enum):
     B4 = 12
 
     @property
-    def bank_A(self):
-        return self is in (A1, A2, A3, A4, A5, A6, A7, A8)
+    def bank_a(self) -> bool:
+        """check if pin is in bank a"""
+        return self in (self.A1, self.A2, self.A3, self.A4,
+                        self.A5, self.A6, self.A7, self.A8)
 
     @property
-    def bank_B(self):
-        return self is in (B1, B2, B3, B4)
+    def bank_b(self) -> bool:
+        """check if pin is in bank b"""
+        return self in (self.B1, self.B2, self.B3, self.B4)
 
     @property
-    def pin_number(self):
-        if self.bank_A:
+    def pin_number(self) -> int:
+        """return pin number within this bank"""
+        if self.bank_a:
             return self.value
-        elif self.bank_B:
-            return self.value - B1.value + 1
+        if self.bank_b:
+            return self.value - self.B1.value + 1
+        raise ValueError()
 
 
 class PadFunc(enum.Enum):
