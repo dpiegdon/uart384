@@ -52,21 +52,32 @@ used to enhance system entropy on linux.
 `gateware/tools/seedrng.py` can be used to receive the entropy and
 inject it directly into the kernel entropy pool.
 
-SPI-over-UART tunnel
---------------------
+SPI and GPIO over UART tunnel
+-----------------------------
 
 `gateware/relay_spi.v`
 
-Talk to an SPI device connected to the stick, via UART. SPI parameters
-are configurable (speed, CPOL, CPHA, MSB first), and SPI transfers are
-triggered via RTS line. This variant talks to the onboard program flash,
-enabling re-flashing of the device via UART. But as it takes 50% of the
-tiny FPGAs logic, it's not really feasible as a bootloader; this is just
-an experiment in what is doable with the board.
+This variant allows complex muxing of SPI lines from an SPI master core
+to all GPIO1..8 pins, as well as the internal program flash. All these
+pins can also be muxed as GPIO input or output and controlled/sampled.
+All that via a simple UART protocol.
+
+This gives full control of inputs and outputs, as well as efficient SPI
+communication via SPI core, in any configuration. The SPI core is used
+for SPI transfer by pulling RTS down, then CS is automatically pulled
+down and data is seemlessly interchanged between SPI and UART.
+
+This e.g. allows reprogramming the internal flash, or external SPI
+devices, including Lattice iCE40 FPGAs if GPIOs are used to trigger
+their CRESET. Since CDONE can also be sampled, this also allows
+programming any iCE40 FPGA in slave mode, fully replacing any other
+needed programming board to flash/program a Lattice iCE40 FPGA. Note
+that the FPGA is pretty much full, no further features will be added to
+this gateware.
 
 See `gateware/tools/spi_device.py` for general SPI command abstraction,
-and `gateware/tools/flashtool.py` as an example tool to work with the
-onboard (or any other) serial flash.
+and `gateware/tools/flashtool.py` and `gateware/tools/spi_device.py` as
+an example client to work with the onboard (or any other) serial flash.
 
 Ring oscillator entropy generator
 ---------------------------------
