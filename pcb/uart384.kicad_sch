@@ -6,7 +6,8 @@
 	(paper "A3")
 	(title_block
 		(title "UART384")
-		(rev "v2.0~dev")
+		(date "2025-10-18")
+		(rev "v2.0")
 		(comment 1 "A USB/UART enabled dev-board for the ice40LP384.")
 		(comment 2 "https://github.com/dpiegdon/uart384")
 		(comment 3 "Licensed under CERN-OHL-W v2")

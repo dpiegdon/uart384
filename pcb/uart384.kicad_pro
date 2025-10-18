@@ -84,14 +84,6 @@
           ""
         ],
         [
-          "lib_footprint_mismatch|111963200|76860400|88c43c2b-7496-476f-9e1f-f50536c521fe|00000000-0000-0000-0000-000000000000",
-          ""
-        ],
-        [
-          "lib_footprint_mismatch|111963200|81051400|ddf7649c-efaa-4847-9fd6-05012c2b5bda|00000000-0000-0000-0000-000000000000",
-          ""
-        ],
-        [
           "silk_overlap|111263200|77557400|5af8d6d7-9ae4-479e-b5cd-06e826a7b943|9009c7be-ad58-4a3e-af0b-5e8acf8a2143",
           ""
         ],
@@ -693,10 +685,10 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "production/uart384-v1.0/",
+      "plot": "production/uart384-v2.0/",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "uart384.glb",
+      "step": "production/uart384-v2.0/uart384.glb",
       "svg": "",
       "vrml": "../3d/uart384.wrl"
     },
@@ -822,7 +814,7 @@
     },
     "net_format_name": "",
     "page_layout_descr_file": "",
-    "plot_directory": "production/uart384-v1.0/",
+    "plot_directory": "production/uart384-v2.0/",
     "space_save_all_events": true,
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
