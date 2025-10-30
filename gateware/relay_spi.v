@@ -221,19 +221,19 @@ module relay_spi(
 	 * To select a function, write the corresponding
 	 * index fron the right (0-indexed) into the function register.
 	 * NON-EXISTING FUNCTIONS DON'T COUNT.
-	 *                                             /---- IO pin ----\  /func.reg\  /----------------------- output functions -----------------------\  /------------- input functions -------------\  */
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA1(gpio1,               padA1func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 0]}, {mux_func_spi_sdi[ 0], func_gpio_receive[ 0]});
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA2(gpio2,               padA2func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 1]}, {mux_func_spi_sdi[ 1], func_gpio_receive[ 1]});
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA3(gpio3,               padA3func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 2]}, {mux_func_spi_sdi[ 2], func_gpio_receive[ 2]});
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA4(gpio4,               padA4func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 3]}, {mux_func_spi_sdi[ 3], func_gpio_receive[ 3]});
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA5(gpio5,               padA5func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 4]}, {mux_func_spi_sdi[ 4], func_gpio_receive[ 4]});
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA6(gpio6,               padA6func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 5]}, {mux_func_spi_sdi[ 5], func_gpio_receive[ 5]});
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA7(gpio7,               padA7func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 6]}, {mux_func_spi_sdi[ 6], func_gpio_receive[ 6]});
-	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA8(gpio8,               padA8func, {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 7]}, {mux_func_spi_sdi[ 7], func_gpio_receive[ 7]});
-	io_pad_ice40 #(.TXCOUNT(1), .RXCOUNT(2)) padB1(SPI_SDI_button,      padB1func,                                           {func_gpio_transmit[ 8]}, {mux_func_spi_sdi[ 8], func_gpio_receive[ 8]});
-	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB2(SPI_SDO_led1_red,    padB2func,              {tunnel_active, func_spi_sdo, func_gpio_transmit[ 9]},                       {func_gpio_receive[ 9]});
-	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB3(SPI_SCK_led2_green,  padB3func,              {spi_xfer_idle, func_spi_sck, func_gpio_transmit[10]},                       {func_gpio_receive[10]});
-	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB4(SPI_SS,              padB4func,              {            1,  func_spi_ss, func_gpio_transmit[11]},                       {func_gpio_receive[11]});
+	 *                                             /---- IO pin ----\  /func.reg\       /----------------------- output functions -----------------------\  /------------- input functions -------------\  */
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA1(gpio1,               padA1func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 0]}, {mux_func_spi_sdi[ 0], func_gpio_receive[ 0]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA2(gpio2,               padA2func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 1]}, {mux_func_spi_sdi[ 1], func_gpio_receive[ 1]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA3(gpio3,               padA3func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 2]}, {mux_func_spi_sdi[ 2], func_gpio_receive[ 2]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA4(gpio4,               padA4func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 3]}, {mux_func_spi_sdi[ 3], func_gpio_receive[ 3]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA5(gpio5,               padA5func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 4]}, {mux_func_spi_sdi[ 4], func_gpio_receive[ 4]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA6(gpio6,               padA6func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 5]}, {mux_func_spi_sdi[ 5], func_gpio_receive[ 5]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA7(gpio7,               padA7func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 6]}, {mux_func_spi_sdi[ 6], func_gpio_receive[ 6]});
+	io_pad_ice40 #(.TXCOUNT(4), .RXCOUNT(2)) padA8(gpio8,               padA8func,      {func_spi_ss,  func_spi_sck, func_spi_sdo, func_gpio_transmit[ 7]}, {mux_func_spi_sdi[ 7], func_gpio_receive[ 7]});
+	io_pad_ice40 #(.TXCOUNT(1), .RXCOUNT(2)) padB1(SPI_SDI_button,      padB1func[1:0],                                           {func_gpio_transmit[ 8]}, {mux_func_spi_sdi[ 8], func_gpio_receive[ 8]});
+	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB2(SPI_SDO_led1_red,    padB2func[1:0],              {tunnel_active, func_spi_sdo, func_gpio_transmit[ 9]},                       {func_gpio_receive[ 9]});
+	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB3(SPI_SCK_led2_green,  padB3func[1:0],              {spi_xfer_idle, func_spi_sck, func_gpio_transmit[10]},                       {func_gpio_receive[10]});
+	io_pad_ice40 #(.TXCOUNT(3), .RXCOUNT(1)) padB4(SPI_SS,              padB4func[1:0],              {         1'b1,  func_spi_ss, func_gpio_transmit[11]},                       {func_gpio_receive[11]});
 
 	// register&tunnel statemachine
 	localparam REGI_VERSION            = 2;	// register interface version
