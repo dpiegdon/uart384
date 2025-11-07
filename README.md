@@ -5,10 +5,17 @@ UART384 - FPGA devboard & USB-stick
 ===================================
 
 <div>
-	<img width="49%" alt="PCB-Rendering"
-     src="https://github.com/dpiegdon/uart384/blob/main/docs/uart384_pcb_rendering2.png"/>
-	<img width="49%" alt="PCB-Photo"
-     src="https://github.com/dpiegdon/uart384/blob/main/docs/uart384_pcb_photo.jpg"/>
+	<img width="49%" alt="PCB-v1.0 Photo"
+     src="https://github.com/dpiegdon/uart384/blob/main/docs/v1.0_photo.jpg"/>
+	<img width="49%" alt="PCB-v2.0 Rendering"
+     src="https://github.com/dpiegdon/uart384/blob/main/docs/v2.0_side.jpg"/>
+</div>
+
+<div>
+	<img width="49%" alt="PCB-v2.0 Rendering"
+     src="https://github.com/dpiegdon/uart384/blob/main/docs/v2.0_top.jpg"/>
+	<img width="49%" alt="PCB-v2.0 Rendering"
+     src="https://github.com/dpiegdon/uart384/blob/main/docs/v2.0_bottom.jpg"/>
 </div>
 
 This is a mini-devboard for the Lattice iCE40LP384, the *BEST* 🔍 FPGA
