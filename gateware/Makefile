@@ -1,7 +1,7 @@
 
 DEVICE=lp384
 PACKAGE=qn32
-PCF=uart384_v1.0.pcf
+PCF=uart384_v2.0.pcf
 
 #QUIET=-q
 
