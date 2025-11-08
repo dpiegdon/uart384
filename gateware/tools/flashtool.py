@@ -16,67 +16,96 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the UART384 software & gateware. If not, see <https://www.gnu.org/licenses/>.
 
-""" Commandeer SPI serial flash via UART tunnel """
+"""Commandeer SPI serial flash via UART tunnel"""
 
 import argparse
 
 from spi_device import SpiFlashDevice
 
-
 if __name__ == "__main__":
-    p = argparse.ArgumentParser("uart2spi",
-                                "Commandeer SPI serial flash via UART tunnel")
-    p.add_argument("device",
-                   help="serial device to use for SPI tunnel")
-    p.add_argument("-v", "--verbose",
-                   action="store_true",
-                   help="enable verbose mode, dump full SPI xfers")
-    p.add_argument("-i", "--ident",
-                   action="store_true",
-                   help="verbosely identify flash chip")
-    p.add_argument("-r", "--read",
-                   type=int, default=None,
-                   help="read this much from flash (starting at address 0)")
-    p.add_argument("-o", "--out",
-                   type=argparse.FileType('wb'), default='-',
-                   help="store read flash data to this file (default stdout)")
-    p.add_argument("-w", "--write",
-                   type=argparse.FileType('rb'), default=None,
-                   help="erase, then store this file to flash")
-    p.add_argument("-W", "--dont-validate-write",
-                   action="store_true",
-                   help="don't read back writes to validate")
-    p.add_argument("-E", "--dont-erase",
-                   action="store_true",
-                   help="don't erase before writing new data")
-    p.add_argument("-e", "--erase",
-                   action="store_true",
-                   help="erase flash")
-    p.add_argument("-x", "--extra",
-                   action="store_true",
-                   help='''read additional memory areas:
+    p = argparse.ArgumentParser("uart2spi", "Commandeer SPI serial flash via UART tunnel")
+    p.add_argument("device", help="serial device to use for SPI tunnel")
+    p.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="enable verbose mode, dump full SPI xfers",
+    )
+    p.add_argument(
+        "-i", "--ident", action="store_true", help="verbosely identify flash chip"
+    )
+    p.add_argument(
+        "-r",
+        "--read",
+        type=int,
+        default=None,
+        help="read this much from flash (starting at address 0)",
+    )
+    p.add_argument(
+        "-o",
+        "--out",
+        type=argparse.FileType('wb'),
+        default='-',
+        help="store read flash data to this file (default stdout)",
+    )
+    p.add_argument(
+        "-w",
+        "--write",
+        type=argparse.FileType('rb'),
+        default=None,
+        help="erase, then store this file to flash",
+    )
+    p.add_argument(
+        "-W",
+        "--dont-validate-write",
+        action="store_true",
+        help="don't read back writes to validate",
+    )
+    p.add_argument(
+        "-E",
+        "--dont-erase",
+        action="store_true",
+        help="don't erase before writing new data",
+    )
+    p.add_argument("-e", "--erase", action="store_true", help="erase flash")
+    p.add_argument(
+        "-x",
+        "--extra",
+        action="store_true",
+        help='''read additional memory areas:
                         serial flash discoverable parameters (SFDP)
-                        and security registers''')
-    p.add_argument("-s", "--status",
-                   action="store_true",
-                   help="read and print status register")
-    p.add_argument("-t", "--tc2050",
-                   action="store_true",
-                   help="target the TC2050 port J3 instead of the internal flash")
+                        and security registers''',
+    )
+    p.add_argument(
+        "-s", "--status", action="store_true", help="read and print status register"
+    )
+    p.add_argument(
+        "-t",
+        "--tc2050",
+        action="store_true",
+        help="target the TC2050 port J3 instead of the internal flash",
+    )
 
     args = p.parse_args()
-    none_selected = (    not args.ident and not args.read
-                     and not args.write and not args.erase
-                     and not args.extra and not args.status)
+    none_selected = (
+        not args.ident
+        and not args.read
+        and not args.write
+        and not args.erase
+        and not args.extra
+        and not args.status
+    )
     if none_selected:
         p.error("nothing to do")
     if args.erase and args.dont_erase:
         p.error("cannot erase and not erase")
 
-    dev = SpiFlashDevice(serialdevice=args.device,
-                         baudrate=500_000,
-                         internal=not args.tc2050,
-                         verbose=args.verbose)
+    dev = SpiFlashDevice(
+        serialdevice=args.device,
+        baudrate=500_000,
+        internal=not args.tc2050,
+        verbose=args.verbose,
+    )
 
     dev.release_from_deep_powerdown()
     if args.ident:
@@ -105,7 +134,7 @@ if __name__ == "__main__":
         if args.write is not None:
             print("WRITING...")
             data = args.write.read()
-            pages = ((i, data[i:i+256]) for i in range(0, len(data), 256))
+            pages = ((i, data[i : i + 256]) for i in range(0, len(data), 256))
             for adr, page in pages:
                 print(f"0x{adr:x}")
                 dev.write_enable()

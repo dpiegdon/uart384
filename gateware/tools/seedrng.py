@@ -16,17 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the UART384 software & gateware. If not, see <https://www.gnu.org/licenses/>.
 
-""" Script to receive raw, high quality entropy data from a serial device
-(baudrate=1000000) and pass it into the kernel for immediate use. """
+"""Script to receive raw, high quality entropy data from a serial device
+(baudrate=1000000) and pass it into the kernel for immediate use."""
 
 import fcntl
 import struct
 import sys
 import time
+
 import serial
 
-
-RNDADDENTROPY = 0x40085203      # for X86; may differ for other arch!
+RNDADDENTROPY = 0x40085203  # for X86; may differ for other arch!
 
 
 if __name__ == "__main__":
@@ -48,8 +48,8 @@ if __name__ == "__main__":
 
                 count += len_bytes
                 now = time.time()
-                if now-t > 1:
-                    avg = int(count / (now-t))
+                if now - t > 1:
+                    avg = int(count / (now - t))
                     print(f"{avg}b/s     ", end="\r")
                     count = 0
                     t = now
