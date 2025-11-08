@@ -18,6 +18,7 @@
 
 """ Script to talk to an SPI device via UART tunnel """
 
+from collections.abc import Callable
 import enum
 import time
 import struct
@@ -127,21 +128,22 @@ class IoRelayDevice():
         self.verbose = verbose
         self.dev = serial.Serial(serialdevice, baudrate, timeout=.1, rtscts=False, dsrdtr=False)
 
-    def _rw1(self, outchar):
-        """Send a single char and return a single response char."""
-        self.dev.write(outchar)
+    def _rw1(self, out: bytes) -> bytes:
+        """Send a single byte and return a single response byte."""
+        assert len(out) == 1
+        self.dev.write(out)
         response = self.dev.read(1)
-        assert len(response) == 1
         if self.verbose:
-            print(f"    _{ord(outchar):02x} -> {ord(response):02x}")
+            print(f"    _{ord(out):02x} -> {ord(response):02x}")
+        assert len(response) == 1
         return response
 
-    def _await_ri(self, value):
+    def _await_ri(self, value: bool):
         """Await that RI line goes to @value."""
         while self.dev.ri != value:
             time.sleep(0.001)
 
-    def _await_dcd(self, value):
+    def _await_dcd(self, value: bool):
         """Await that DCD line goes to @value."""
         while self.dev.cd != value:
             time.sleep(0.001)
@@ -153,7 +155,7 @@ class IoRelayDevice():
         self.dev.rts = enable
         self._await_dcd(enable)
 
-    def register_read_write(self, address: Register, new_value_fun: callable) -> int:
+    def register_read_write(self, address: Register, new_value_fun: Callable[[int], int]) -> tuple[int, int]:
         """Read register @address, pass read value to @new_value_fun,
         write its return value as new value of register.
         Returns tuple of (old value, new value) of register.
@@ -167,6 +169,14 @@ class IoRelayDevice():
             new_value = old_value
         self._rw1(new_value.to_bytes())
         return (old_value, new_value)
+
+    def register_read_clear_set_write(self, address: Register, clear_mask: int, set_mask: int):
+        """Read register @address, clear @clear_mask, set @set_mask,
+        and write that result back to register @address.
+        Returns tuple of (old value, new value) of register."""
+        def _mask_fun(value: int) -> int:
+            return (value & ~clear_mask) | set_mask
+        return self.register_read_write(address, _mask_fun)
 
     def register_write(self, address: Register, value: int) -> int:
         """Read register @address, write @value as new byte,
@@ -202,8 +212,8 @@ class IoRelayDevice():
 
     def mux_pads(self, padfuncs: dict):
         """mux multiple pad functions as described by iterable padfuncs"""
-        for pad in padfuncs:
-            self.mux_pad(pad, padfuncs[pad])
+        for pad, func in padfuncs.items():
+            self.mux_pad(pad, func)
 
     # all A pads muxed to input
     MUX_SETTINGS_A_IN =   {Pad.A1: PadFunc.GPIO_IN,
@@ -281,15 +291,16 @@ class IoRelayDevice():
         self.mux_pads(self.MUX_SETTINGS_A_PROG)
         self.mux_pads(self.MUX_SETTINGS_B_SAFE)
 
-    def gpo_set(self, a_values:int, b_values:int):
-        """Set general purpose output values for port A and B.
-        Either may be None to not set them."""
-        if a_values is not None:
-            self.register_write(Register.GPIO_WRITE_A, a_values)
-        if b_values is not None:
-            self.register_write(Register.GPIO_WRITE_B, b_values)
+    def gpo_clear_set(self, a_mask_clear: int=0, a_mask_set: int=0, b_mask_clear: int=0, b_mask_set: int=0) -> tuple[int, int]:
+        """Mask and set GPIO output values.
+        Returns a tuple with new values (new_a, new_b)"""
+        _, new_a = self.register_read_clear_set_write(Register.GPIO_WRITE_A,
+                                                      a_mask_clear, a_mask_set)
+        _, new_b = self.register_read_clear_set_write(Register.GPIO_WRITE_B,
+                                                      b_mask_clear, b_mask_set)
+        return (new_a, new_b)
 
-    def gpi_get(self):
+    def gpi_get(self) -> tuple[int, int]:
         """Return general purpose input values for port A and B
         as tuple (a:int, b:int) """
         return (self.register_read(Register.GPIO_READ_A),
@@ -306,7 +317,7 @@ class IoRelayDevice():
             print("  _CFG")
         self.register_write(Register.SPI_CTRL, cfg)
 
-    def transceive(self, data:bytes):
+    def transceive(self, data: bytes) -> bytes:
         """ do a full SPI transmit/receive cycle,
         send @data and return received result """
         if self.verbose:
@@ -332,7 +343,7 @@ class SpiFlashDevice(IoRelayDevice):
             self.mux_spi_internal()
         else:
             self.mux_spi_external()
-            self.gpo_set(0b00000000, None)  # pull down CRESET to trigger device reset
+            self.gpo_clear_set(a_mask_clear=0xff)
 
     _FUNCS = {# name             short cmdcode suffix-len  ret-start ret-len
               "read_status_lo": ("RDSRl",0x05, 1,          1,        1),
