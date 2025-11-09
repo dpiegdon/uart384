@@ -19,6 +19,7 @@
 """Commandeer SPI serial flash via UART tunnel"""
 
 import argparse
+import logging
 
 from spi_device import SpiFlashDevice
 
@@ -28,8 +29,9 @@ if __name__ == "__main__":
     p.add_argument(
         "-v",
         "--verbose",
-        action="store_true",
-        help="enable verbose mode, dump full SPI xfers",
+        action="count",
+        default=0,
+        help="increase verbosity level",
     )
     p.add_argument(
         "-i", "--ident", action="store_true", help="verbosely identify flash chip"
@@ -100,11 +102,16 @@ if __name__ == "__main__":
     if args.erase and args.dont_erase:
         p.error("cannot erase and not erase")
 
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.DEBUG if args.verbose else logging.INFO,
+    )
+
     dev = SpiFlashDevice(
         serialdevice=args.device,
         baudrate=500_000,
         internal=not args.tc2050,
-        verbose=args.verbose,
+        verbose=args.verbose > 1,
     )
 
     dev.release_from_deep_powerdown()

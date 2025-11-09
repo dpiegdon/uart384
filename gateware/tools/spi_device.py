@@ -19,6 +19,8 @@
 """Script to talk to an SPI device via UART tunnel"""
 
 import enum
+import logging
+import os
 import struct
 import time
 from collections.abc import Callable
@@ -187,6 +189,7 @@ class IoRelayDevice:
         @serialdevice: serial port device to connect to
         @baudrate: baudrate of serial communication
         @verbose: log verbose information"""
+        self.logging = logging.getLogger(os.path.basename(os.path.realpath(serialdevice)))
         self.verbose = verbose
         self.dev = serial.Serial(
             serialdevice, baudrate, timeout=0.1, rtscts=False, dsrdtr=False
@@ -198,7 +201,7 @@ class IoRelayDevice:
         self.dev.write(out)
         response = self.dev.read(1)
         if self.verbose:
-            print(f"    _{ord(out):02x} -> {ord(response):02x}")
+            self.logging.debug(f"_{ord(out):02x} -> {ord(response):02x}")
         assert len(response) == 1
         return response
 
@@ -215,7 +218,7 @@ class IoRelayDevice:
     def tunnel(self, enable: bool):
         """Enter or leave tunnel mode"""
         if self.verbose and self.dev.rts != enable:
-            print(f"  _{'ENTER' if enable else 'EXIT'} TUNNEL")
+            self.logging.debug(f"_{'ENTER' if enable else 'EXIT'} TUNNEL")
         self.dev.rts = enable
         self._await_dcd(enable)
 
@@ -269,11 +272,10 @@ class IoRelayDevice:
             raise ValueError(f"Function {function} not supported for pad {pad}") from e
         address = Register.MUX_PAD_A2_A1.value + (pad.value - 1) // 2
         high_nibble = 0 == pad.value % 2
-        if self.verbose:
-            print(
-                f"MUX {pad} -> {function}, address {address}: "
-                f"{'high' if high_nibble else 'low'}-nibble := idx {idx}"
-            )
+        self.logging.debug(
+            f"MUX {pad} := {function:<15s}, reg{address}-"
+            f"{'hi' if high_nibble else 'lo'}-nibble := idx {idx}"
+        )
 
         def _fun(v: int) -> int:
             return (
@@ -415,15 +417,15 @@ class IoRelayDevice:
             | int(msb_first) << 4
             | (clkdiv & 0xF)
         )
-        if self.verbose:
-            print("  _CFG")
+        self.logging.debug(
+            f"SPI Config: {cpol=} {cpha=} {msb_first=} {cs_active_low=} {clkdiv=}"
+        )
         self.register_write(Register.SPI_CTRL, cfg)
 
     def transceive(self, data: bytes) -> bytes:
         """do a full SPI transmit/receive cycle,
         send @data and return received result"""
-        if self.verbose:
-            print("  _XCEIVE")
+        self.logging.debug("transceive()")
         self.tunnel(True)
         result = b''
         for w in data:
