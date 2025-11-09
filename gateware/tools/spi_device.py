@@ -102,9 +102,11 @@ class PadFunc(enum.Enum):
     HIGH = 8
 
 
+# all functions related to SPI
 SPI_FUNCTIONS = (PadFunc.SPI_SS, PadFunc.SPI_SCK, PadFunc.SPI_SDO, PadFunc.SPI_SDI)
 
 
+# mapping of all functions available for each pad, with the same index as in hardware
 PadFunctions = {
     Pad.A1: (
         PadFunc.GPIO_IN,
@@ -180,7 +182,11 @@ PadFunctions = {
 class IoRelayDevice:
     """Encapsulation of an UART384 with the IO relay gateware "relay_spi"."""
 
-    def __init__(self, serialdevice: str, baudrate: int, verbose: bool = False):
+    def __init__(self, serialdevice: str, baudrate: int = 500_000, verbose: bool = False):
+        """Initialize new IoRelayDevice.
+        @serialdevice: serial port device to connect to
+        @baudrate: baudrate of serial communication
+        @verbose: log verbose information"""
         self.verbose = verbose
         self.dev = serial.Serial(
             serialdevice, baudrate, timeout=0.1, rtscts=False, dsrdtr=False
@@ -435,10 +441,12 @@ class SpiFlashDevice(IoRelayDevice):
     def __init__(
         self,
         serialdevice: str,
-        baudrate: int,
+        baudrate: int = 500_000,
         internal: bool = True,
         verbose: bool = False,
     ):
+        """Initialize new SpiFlashDevice.
+        @internal: mux for internal SPI device: program flash"""
         super().__init__(serialdevice=serialdevice, baudrate=baudrate, verbose=verbose)
         self.spi_configure(
             cpol=True, cpha=True, msb_first=True, cs_active_low=True, clkdiv=4
@@ -449,7 +457,9 @@ class SpiFlashDevice(IoRelayDevice):
             self.mux_spi_external()
             self.gpo_clear_set(a_mask_clear=0xFF)
 
-    _FUNCS = {  # name             short cmdcode suffix-len  ret-start ret-len
+    # read-only commands of SPI flash
+    _FUNCS = {
+        # name: {short, cmdcode, suffix-len, ret-start, ret-len}
         "read_status_lo": ("RDSRl", 0x05, 1, 1, 1),
         "read_status_hi": ("RDSRh", 0x35, 1, 1, 1),
         "write_enable": ("WREN", 0x06, 0, 1, 0),
@@ -462,7 +472,9 @@ class SpiFlashDevice(IoRelayDevice):
         "read_identification": ("RDID", 0x9F, 3, 1, 3),
     }
 
-    _STATUSBITS = {  # name   source attribute   bit
+    # status bits and their names
+    _STATUSBITS = {
+        # {name: source attribute, bit}
         "WIP": ("read_status_lo", 0),
         "WEL": ("read_status_lo", 1),
         "BP0": ("read_status_lo", 2),
@@ -482,7 +494,9 @@ class SpiFlashDevice(IoRelayDevice):
     }
 
     def __getattr__(self, attr):
-        """instantiate generic function from function-table"""
+        """map attribute-access to
+        - either generic read-only commands from _FUNCS table
+        - or status bits from status command"""
         if attr in self._FUNCS:
             x = self._FUNCS[attr]
 
@@ -503,21 +517,21 @@ class SpiFlashDevice(IoRelayDevice):
         return struct.pack(">I", address)[1:]
 
     def read_bytes(self, address: int, count: int):
-        """READ"""
+        """READ command"""
         return self.transceive(b'\x03' + self._to_adr(address) + b'\x00' * count)[4:]
 
     def read_serial_flash_discoverable_parameters(
         self, address: int = 0, count: int = 0x80
     ):
-        """SFDP"""
+        """SFDP command"""
         return self.transceive(b'\x5a' + self._to_adr(address) + b'\x00' * count)[4:]
 
     def read_security_registers(self, address: int = 0, count: int = 0x400):
-        """RSR. only valid for 0x000..0x3ff?"""
+        """RSR command. only valid for 0x000..0x3ff?"""
         return self.transceive(b'\x48' + self._to_adr(address) + b'\x00' * count)[4:]
 
     def page_program(self, address: int, data):
-        """PP"""
+        """PP command"""
         return self.transceive(b'\x02' + self._to_adr(address) + data)[4:]
 
     def await_write(self):
