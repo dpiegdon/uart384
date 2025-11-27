@@ -1,5 +1,6 @@
 
 DEVICE=lp384
+SYNTH_ICE40_DEV=lp
 PACKAGE=qn32
 PCF=uart384_v2.0.pcf
 
@@ -8,10 +9,14 @@ PCF=uart384_v2.0.pcf
 # RNG seed for nextpnr-ice40. Try different values if you have not fully utilized the FPGAs logic but get placement issues.
 # Otherwise keep fixed to get a deterministic behavior.
 # You can also use `-r` to try random values. The used seed is listed in the first line of nextpnr's output.
-SEED=--seed=636665658
+SEED=--seed=1477321110
 #SEED=-r
+
 # the size-constrained LP384 seems to work better with `sa' placing algorithm. some designs don't work with the standard placer `heap', or at least not very well.
 PLACER=--placer sa
+
+# enable to ignore synthesis loops
+IGNORE_LOOPS=--ignore-loops
 
 TESTBENCHES=$(wildcard *_tb.v)
 TESTS=$(TESTBENCHES:%.v=%.test)
@@ -170,10 +175,15 @@ relay_spi.dot: $(RELAY_SPI_FILES)
 	iverilog  -g2012 -Wall -Wno-timescale -o $@ $^
 
 %.json: %.v
-	yosys -Q $(QUIET) -p 'proc; opt_clean -purge; opt -fine -full -share_all; synth_ice40 -dff -abc2 -top $(subst .v,,$<) -json $@' $^
+	@# see https://yosyshq.readthedocs.io/projects/yosys/en/latest/using_yosys/more_scripting/interactive_investigation.html
+	@# see https://github.com/Ravenslofty/yosys-cookbook/blob/master/ice40.md
+	yosys -Q $(QUIET) -p 'proc; opt_clean -purge; opt -fine -full -share_all; synth_ice40 -device ${SYNTH_ICE40_DEV} -dff -abc2 -top $(subst .v,,$<) -json $@' $^
 
 %.asc: %.json
-	nextpnr-ice40 $(QUIET) $(SEED) $(PLACER) --ignore-loops --promote-logic --opt-timing --$(DEVICE) --package $(PACKAGE) --pcf $(PCF) --json $< --asc $@
+	@# https://github.com/YosysHQ/nextpnr/blob/master/docs/generic.md
+	@# https://github.com/YosysHQ/icestorm
+	@# https://prjicestorm.readthedocs.io/en/latest/
+	nextpnr-ice40 $(QUIET) $(SEED) $(PLACER) $(IGNORE_LOOPS) --promote-logic --opt-timing --$(DEVICE) --package $(PACKAGE) --pcf $(PCF) --json $< --asc $@
 
 %.bin: %.asc
 	icepack $< $@
