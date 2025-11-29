@@ -25,24 +25,8 @@ import struct
 import time
 from collections.abc import Callable
 
+from __future__ import annotations
 import serial
-
-
-class Register(enum.Enum):
-    """Registers that can be addressed"""
-
-    MUX_PAD_A2_A1 = 0x1
-    MUX_PAD_A4_A3 = 0x2
-    MUX_PAD_A6_A5 = 0x3
-    MUX_PAD_A8_A7 = 0x4
-    MUX_PAD_B2_B1 = 0x5
-    MUX_PAD_B4_B3 = 0x6
-    GPIO_WRITE_A = 0x8
-    GPIO_WRITE_B = 0x9
-    GPIO_READ_A = 0xA
-    GPIO_READ_B = 0xB
-    SPI_CTRL = 0xC
-    VERSION = 0xF
 
 
 class Pad(enum.Enum):
@@ -102,6 +86,31 @@ class PadFunc(enum.Enum):
     TUNNEL_ACTIVE = 6
     SPI_XFER_IDLE = 7
     HIGH = 8
+
+
+class Register(enum.Enum):
+    """Registers that can be addressed"""
+
+    MUX_PAD_A2_A1 = 0x1
+    MUX_PAD_A4_A3 = 0x2
+    MUX_PAD_A6_A5 = 0x3
+    MUX_PAD_A8_A7 = 0x4
+    MUX_PAD_B2_B1 = 0x5
+    MUX_PAD_B4_B3 = 0x6
+    GPIO_WRITE_A = 0x8
+    GPIO_WRITE_B = 0x9
+    GPIO_READ_A = 0xA
+    GPIO_READ_B = 0xB
+    SPI_CTRL = 0xC
+    VERSION = 0xF
+
+    @classmethod
+    def padmux_register(cls, pad: Pad) -> tuple[Register, bool]:
+        """Identify mux register for given @pad.
+        Returns (register_address, is_high_nibble)"""
+        address = Register(cls.MUX_PAD_A2_A1.value + (pad.value - 1) // 2)
+        is_high_nibble = 0 == pad.value % 2
+        return (address, is_high_nibble)
 
 
 # all functions related to SPI
@@ -231,7 +240,7 @@ class IoRelayDevice:
         @new_value_fun must either take an int and return an int,
         or may be None, then the value is not changed before sending"""
         self.tunnel(False)
-        old_value = ord(self._rw1(address.to_bytes()))
+        old_value = ord(self._rw1(address.value.to_bytes()))
         if new_value_fun is not None:
             new_value = new_value_fun(old_value)
         else:
@@ -270,17 +279,16 @@ class IoRelayDevice:
             idx = PadFunctions[pad].index(function)
         except ValueError as e:
             raise ValueError(f"Function {function} not supported for pad {pad}") from e
-        address = Register.MUX_PAD_A2_A1.value + (pad.value - 1) // 2
-        high_nibble = 0 == pad.value % 2
+        address, is_high_nibble = Register.padmux_register(pad)
         self.logging.debug(
             f"MUX {pad} := {function:<15s}, reg{address}-"
-            f"{'hi' if high_nibble else 'lo'}-nibble := idx {idx}"
+            f"{'hi' if is_high_nibble else 'lo'}-nibble := idx {idx}"
         )
 
         def _fun(v: int) -> int:
             return (
                 (v & 0x0F | ((idx & 0xF) << 4))
-                if high_nibble
+                if is_high_nibble
                 else (v & 0xF0 | ((idx & 0xF) << 0))
             )
 
