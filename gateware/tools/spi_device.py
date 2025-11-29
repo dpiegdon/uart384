@@ -16,7 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the UART384 software & gateware. If not, see <https://www.gnu.org/licenses/>.
 
+# pylint: disable=logging-fstring-interpolation
+
 """Script to talk to an SPI device via UART tunnel"""
+
+# needed for forward-decl in type-annotations of Register.padmux_register()
+from __future__ import annotations
 
 import enum
 import logging
@@ -25,7 +30,6 @@ import struct
 import time
 from collections.abc import Callable
 
-from __future__ import annotations
 import serial
 
 
