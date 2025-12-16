@@ -5,10 +5,10 @@ UART384 - FPGA devboard & USB-stick
 ===================================
 
 <div>
-	<img width="49%" alt="PCB-v1.0 Photo"
-     src="https://github.com/dpiegdon/uart384/blob/main/docs/v1.0_photo.jpg"/>
-	<img width="49%" alt="PCB-v2.0 Rendering"
-     src="https://github.com/dpiegdon/uart384/blob/main/docs/v2.0_side.jpg"/>
+    <img width="49%" alt="PCB-v2.0 Photo Top"
+    src="https://github.com/dpiegdon/uart384/blob/main/docs/v2.0_photo_top.jpg"/>
+    <img width="49%" alt="PCB-v2.0 Photo Side"
+    src="https://github.com/dpiegdon/uart384/blob/main/docs/v2.0_photo_side.jpg"/>
 </div>
 
 <div>
