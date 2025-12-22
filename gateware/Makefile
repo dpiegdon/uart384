@@ -55,12 +55,7 @@ clean:
 	-rm *_tb.test
 	-rm *_tb.vcd
 
-graphs: $(subst .v,.png,$(ENTROPY_FILES))	\
-	$(subst .v,.png,$(PRESCALER_FILES))	\
-	$(subst .v,.png,$(RESET_FILES))		\
-	$(subst .v,.png,$(BUTTON_FILES))	\
-	$(subst .v,.png,$(UART_FILES))		\
-	$(subst .v,.png,$(TOPLEVEL_FILES))
+graphs: $(subst .v,.png,$(TOPLEVEL_FILES))
 
 randomness_test:
 	# receive random data from device and do NIST SP800-90B entropy assessment tests.
