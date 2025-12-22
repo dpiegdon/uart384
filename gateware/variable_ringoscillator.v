@@ -18,7 +18,7 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
 
 `default_nettype none
 
-`include "verilog-buildingblocks/lattice_ice40/ringoscillator.v"
+`include "verilog-buildingblocks/lattice_ice40/ringoscillator_adjustable.v"
 `include "verilog-buildingblocks/uart.v"
 
 /* Variable delay ring oscillator.

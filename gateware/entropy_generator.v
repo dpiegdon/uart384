@@ -18,7 +18,7 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
 
 `default_nettype none
 
-`include "verilog-buildingblocks/lattice_ice40/random.v"
+`include "verilog-buildingblocks/lattice_ice40/metastable_oscillator_depth2.v"
 `include "verilog-buildingblocks/randomized_spongent.v"
 `include "verilog-buildingblocks/uart.v"
 
