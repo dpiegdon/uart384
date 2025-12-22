@@ -18,6 +18,8 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
 
 `default_nettype none
 
+`include "verilog-buildingblocks/clock_prescaler.v"
+
 /* Simple USB UART pass-through.
  *
  * This only connects the lines, does nothing to the signals.

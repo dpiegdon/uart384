@@ -18,6 +18,11 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
 
 `default_nettype none
 
+`include "verilog-buildingblocks/clock_prescaler.v"
+`include "verilog-buildingblocks/lattice_ice40/io_pad_ice40.v"
+`include "verilog-buildingblocks/simple_spi_master.v"
+`include "verilog-buildingblocks/uart.v"
+
 /* UART-to-SPI/GPIO interfacing gateware.
  *
  * This gateware provides a UART interface with:

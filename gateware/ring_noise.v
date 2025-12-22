@@ -18,6 +18,12 @@ along with the UART384 software & gateware. If not, see <https://www.gnu.org/lic
 
 `default_nettype none
 
+`include "verilog-buildingblocks/lattice_ice40/random.v"
+`include "verilog-buildingblocks/lattice_ice40/ringoscillator.v"
+`include "verilog-buildingblocks/random.v"
+`include "verilog-buildingblocks/synchronous_reset_timer.v"
+`include "verilog-buildingblocks/uart.v"
+
 /* USB entropy generator.
  *
  * The FPGA is used in a feedback-loop configuration such that

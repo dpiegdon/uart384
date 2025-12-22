@@ -9,7 +9,7 @@ PCF=uart384_v2.0.pcf
 # RNG seed for nextpnr-ice40. Try different values if you have not fully utilized the FPGAs logic but get placement issues.
 # Otherwise keep fixed to get a deterministic behavior.
 # You can also use `-r` to try random values. The used seed is listed in the first line of nextpnr's output.
-SEED=--seed=1477321110
+SEED=--seed=485765720
 #SEED=-r
 
 # the size-constrained LP384 seems to work better with `sa' placing algorithm. some designs don't work with the standard placer `heap', or at least not very well.
@@ -25,48 +25,10 @@ TESTS=$(TESTBENCHES:%.v=%.test)
 
 .PRECIOUS: %.json %.asc %.bin %.rpt
 
-# source code grouped by feature:
-ENTROPY_FILES = \
-	verilog-buildingblocks/lattice_ice40/random.v \
-	verilog-buildingblocks/lattice_ice40/ringoscillator.v \
-	verilog-buildingblocks/binary_debias.v \
-	verilog-buildingblocks/lfsr.v \
-	verilog-buildingblocks/random.v \
-	verilog-buildingblocks/spongent_hash.v \
-	verilog-buildingblocks/randomized_spongent.v
-
-PRESCALER_FILES = \
-	verilog-buildingblocks/clock_prescaler.v
-
-RESET_FILES = \
-	verilog-buildingblocks/synchronous_reset_timer.v
-
-BUTTON_FILES = \
-	verilog-buildingblocks/lattice_ice40/debounced_button.v \
-	verilog-buildingblocks/lattice_ice40/pullup_input.v \
-	verilog-buildingblocks/lattice_ice40/tristate_output.v \
-	verilog-buildingblocks/debouncer.v
-
-UART_FILES = \
-	verilog-buildingblocks/uart.v
-
-SPI_FILES = \
-	verilog-buildingblocks/simple_spi_master.v
-
-IOPAD_FILES = \
-	verilog-buildingblocks/lattice_ice40/io_pad_ice40.v \
-	verilog-buildingblocks/io_mux.v
-
-TOPLEVEL_FILES = \
-	blink.v \
-	entropy_generator.v \
-	ring_noise.v \
-	uart_passthrough.v \
-	variable_ringoscillator.v \
-	relay_spi.v
+TOPLEVEL_FILES = $(wildcard *.v)
 
 # generic targets:
-all: $(subst .v,.rpt,$(TOPLEVEL_FILES))
+all: $(subst .v,.bin,$(TOPLEVEL_FILES)) $(subst .v,.rpt,$(TOPLEVEL_FILES))
 
 prog: top.bin
 	iceprog $<
@@ -115,47 +77,6 @@ source_randomness:
 	# receive random data from device and pipe it into the kernel entropy pool.
 	socat -u file:/dev/ttyUSB0,b1000000,ignoreeof,cs8,raw,echo=0 STDOUT | sudo tee /dev/random | pv > /dev/null
 
-# specific projects:
-BLINK_FILES = $(PRESCALER_FILES) blink.v
-
-blink.json: $(BLINK_FILES)
-
-blink.dot: $(BLINK_FILES)
-
-
-ENTROPY_GENERATOR_FILES = $(RESET_FILES) $(ENTROPY_FILES) $(UART_FILES) entropy_generator.v
-
-entropy_generator.json: $(ENTROPY_GENERATOR_FILES)
-
-entropy_generator.dot: $(ENTROPY_GENERATOR_FILES)
-
-
-RINGOSCILLATOR_FILES = $(RESET_FILES) $(ENTROPY_FILES) $(UART_FILES) ring_noise.v
-
-ring_noise.json: $(RINGOSCILLATOR_FILES)
-
-ring_noise.dot: $(RINGOSCILLATOR_FILES)
-
-
-UART_PASSTHROUGH_FILES = $(PRESCALER_FILES) uart_passthrough.v
-
-uart_passthrough.json: $(UART_PASSTHROUGH_FILES)
-
-uart_passthrough.dot: $(UART_PASSTHROUGH_FILES)
-
-
-VARIABLE_RINGOSCILLATOR_FILES = variable_ringoscillator.v $(ENTROPY_FILES) $(UART_FILES)
-
-variable_ringoscillator.json: $(VARIABLE_RINGOSCILLATOR_FILES)
-
-variable_ringoscillator.dot: $(VARIABLE_RINGOSCILLATOR_FILES)
-
-
-RELAY_SPI_FILES = relay_spi.v $(IOPAD_FILES) $(UART_FILES) $(SPI_FILES) $(PRESCALER_FILES)
-
-relay_spi.json: $(RELAY_SPI_FILES)
-
-relay_spi.dot: $(RELAY_SPI_FILES)
 
 
 # generic pattern rules
@@ -170,9 +91,9 @@ relay_spi.dot: $(RELAY_SPI_FILES)
 	# and delete the parent file
 	-rm $(notdir $<)
 
-%_tb.test: %_tb.v %.v
-	verilator +1800-2012ext+v --lint-only -Wall --bbox-unsup $<
-	iverilog  -g2012 -Wall -Wno-timescale -o $@ $^
+%_tb.test: %_tb.v
+	verilator -DTESTBENCH --top-module $(patsubst %_tb.test,%,$@) +1800-2012ext+v --lint-only -Wall -Wno-PROCASSINIT --bbox-unsup $(patsubst %_tb.test,%.v,$@)
+	iverilog  -DTESTBENCH -g2012 -Wall -Wno-timescale -o $@ $^
 
 %.json: %.v
 	@# see https://yosyshq.readthedocs.io/projects/yosys/en/latest/using_yosys/more_scripting/interactive_investigation.html
